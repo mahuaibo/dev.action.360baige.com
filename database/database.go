@@ -12,11 +12,13 @@ import (
 	"dev.model.360baige.com/models/order"
 	"dev.model.360baige.com/models/personnel"
 	"dev.model.360baige.com/models/user"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func init() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 	orm.Debug = false
+	orm.RegisterDataBase("default", "mysql", "demo2015:baige.2016@tcp(182.92.163.192:3306)/db_user?charset=utf8", 30)
 
 	orm.RegisterDataBase("account", "mysql", "demo2015:baige.2016@tcp(182.92.163.192:3306)/db_account?charset=utf8", 30)
 	orm.RegisterModel(&account.Account{}, &account.AccountItem{}, &account.Transaction{})
