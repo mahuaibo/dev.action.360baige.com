@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	_"fmt"
 	"time"
-	_"fmt"
 	"strings"
 )
 
@@ -127,7 +126,9 @@ func (*AccountAction) List(args *paginator.Paginator, reply *paginator.Paginator
 	} else {
 		qs = qs.OrderBy("-id")
 	}
-	qs = qs.Limit(args.PageSize, start)
+	if (args.PageSize != 0) {
+		qs = qs.Limit(args.PageSize, start)
+	}
 	_, err := qs.Values(&reply.List)
 	return err
 }
