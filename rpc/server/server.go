@@ -61,16 +61,17 @@ func init() {
  * 注册服务
  */
 func register(services map[string]interface{}) {
+
 	etcdServerRegisterAddr := beego.AppConfig.String("RpcEtcdURL")
 	serverRegisterAddr := beego.AppConfig.String("RpcServer")
 
 	server := rpcx.NewServer()
-	rplugin := &plugin.EtcdRegisterPlugin{
-		ServiceAddress: "tcp@" + serverRegisterAddr,
-		EtcdServers:    []string{etcdServerRegisterAddr },
-		BasePath:       "/rpcx",
-		Metrics:        metrics.NewRegistry(),
-		Services:       make([]string, len(services)),
+	rplugin := &plugin.EtcdV3RegisterPlugin{
+		ServiceAddress:      "tcp@" + serverRegisterAddr,
+		EtcdServers:         []string{etcdServerRegisterAddr },
+		BasePath:            "/rpcx",
+		Metrics:             metrics.NewRegistry(),
+		Services:            make([]string, len(services)),
 		UpdateInterval: time.Minute,
 	}
 	rplugin.Start()
