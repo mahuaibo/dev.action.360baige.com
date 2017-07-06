@@ -35,6 +35,7 @@ func (*ApplicationTplAction) Add(args *application.ApplicationTpl, reply *applic
 // 查询 by Id
 func (*ApplicationTplAction) FindById(args *application.ApplicationTpl, reply *application.ApplicationTpl) error {
 	o := orm.NewOrm()
+
 	o.Using("application")
 	reply.Id = args.Id
 	err := o.Read(reply)

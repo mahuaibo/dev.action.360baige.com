@@ -15,7 +15,7 @@ import (
 	"dev.action.360baige.com/actions/order"
 	"dev.action.360baige.com/actions/user"
 	"dev.action.360baige.com/actions/personnel"
-	"time"
+	_"time"
 )
 
 func init() {
@@ -66,7 +66,8 @@ func register(services map[string]interface{}) {
 	serverRegisterAddr := beego.AppConfig.String("RpcServer")
 
 	server := rpcx.NewServer()
-	rplugin := &plugin.EtcdV3RegisterPlugin{
+	//EtcdV3RegisterPlugin EtcdRegisterPlugin time.Minute
+	rplugin := &plugin.EtcdRegisterPlugin{
 		ServiceAddress:      "tcp@" + serverRegisterAddr,
 		EtcdServers:         []string{etcdServerRegisterAddr },
 		BasePath:            "/rpcx",
