@@ -6,16 +6,16 @@ import (
 	"github.com/smallnest/rpcx"
 	"github.com/smallnest/rpcx/plugin"
 	"github.com/astaxie/beego/logs"
-	"dev.action.360baige.com/actions/account"
-	"dev.action.360baige.com/actions/application"
-	"dev.action.360baige.com/actions/attendance"
-	"dev.action.360baige.com/actions/card"
-	"dev.action.360baige.com/actions/company"
-	"dev.action.360baige.com/actions/logger"
-	"dev.action.360baige.com/actions/machine"
-	"dev.action.360baige.com/actions/order"
 	"dev.action.360baige.com/actions/user"
-	"dev.action.360baige.com/actions/personnel"
+	//"dev.action.360baige.com/actions/account"
+	//"dev.action.360baige.com/actions/application"
+	//"dev.action.360baige.com/actions/attendance"
+	//"dev.action.360baige.com/actions/card"
+	//"dev.action.360baige.com/actions/company"
+	//"dev.action.360baige.com/actions/logger"
+	//"dev.action.360baige.com/actions/machine"
+	//"dev.action.360baige.com/actions/order"
+	//"dev.action.360baige.com/actions/personnel"
 	"time"
 )
 
@@ -74,13 +74,15 @@ func register(services map[string]interface{}) {
 	for serName, _ := range services {
 		servs = append(servs, serName)
 	}
+
+	//EtcdV3RegisterPlugin EtcdRegisterPlugin time.Minute
 	rplugin := &plugin.EtcdRegisterPlugin{
 		ServiceAddress: "tcp@" + serverRegisterAddr,
-		EtcdServers:    []string{etcdServerRegisterAddr},
+		EtcdServers:    []string{etcdServerRegisterAddr },
 		BasePath:       "/rpcx",
 		Metrics:        metrics.NewRegistry(),
-		Services:       servs,
-		UpdateInterval: time.Second,
+		Services:       make([]string, len(services)),
+		UpdateInterval: time.Minute,
 	}
 	rplugin.Start()
 	server := rpcx.NewServer()
