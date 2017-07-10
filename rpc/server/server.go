@@ -7,14 +7,15 @@ import (
 	"github.com/smallnest/rpcx/plugin"
 	"github.com/astaxie/beego/logs"
 	"dev.action.360baige.com/actions/user"
-	//"dev.action.360baige.com/actions/account"
+	"dev.action.360baige.com/actions/company"
+	"dev.action.360baige.com/actions/logger"
+	"dev.action.360baige.com/actions/city"
+	"dev.action.360baige.com/actions/account"
+	"dev.action.360baige.com/actions/order"
 	//"dev.action.360baige.com/actions/application"
 	//"dev.action.360baige.com/actions/attendance"
 	//"dev.action.360baige.com/actions/card"
-	//"dev.action.360baige.com/actions/company"
-	//"dev.action.360baige.com/actions/logger"
 	//"dev.action.360baige.com/actions/machine"
-	//"dev.action.360baige.com/actions/order"
 	//"dev.action.360baige.com/actions/personnel"
 	"time"
 )
@@ -26,14 +27,22 @@ func init() {
 	log.Debug("server run start")
 	// 服务
 	services := map[string]interface{}{
-		//
+
 		"User":         &user.UserAction{},
 		"UserPosition": &user.UserPositionAction{},
-		////
-		//"Account":     &account.AccountAction{},
-		//"AccountItem": &account.AccountItemAction{},
-		//"Transaction": &account.TransactionAction{},
-		////
+
+		"Company": &company.CompanyAction{},
+
+		"Logger": &logger.LoggerAction{},
+
+		"City": &city.CityAction{},
+
+		"Account":     &account.AccountAction{},
+		"AccountItem": &account.AccountItemAction{},
+		"Transaction": &account.TransactionAction{},
+
+		"Order": &order.OrderAction{},
+
 		//"Application":    &application.ApplicationAction{},
 		//"ApplicationTpl": &application.ApplicationTplAction{},
 		////
@@ -45,14 +54,7 @@ func init() {
 		//"AttendanceShiftRecord": &attendance.AttendanceShiftRecordAction{},
 		////
 		//"Card": &card.CardAction{},
-		////
-		//"Company": &company.CompanyAction{},
-		////
-		//"Logger": &logger.LoggerAction{},
-		////
 		//"Machine": &machine.MachineAction{},
-		////
-		//"Order": &order.OrderAction{},
 		////
 		//"Person":          &personnel.PersonAction{},
 		//"PersonRelation":  &personnel.PersonRelationAction{},

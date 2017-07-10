@@ -9,6 +9,7 @@ import (
 	"strings"
 	"encoding/json"
 	"time"
+	"fmt"
 )
 
 type UserPositionAction struct {
@@ -41,6 +42,15 @@ func (*UserPositionAction) FindById(args *user.UserPosition, reply *user.UserPos
 	o.Using("user")
 	reply.Id = args.Id
 	err := o.Read(reply)
+	return err
+}
+
+// 查询 by UserId
+func (*UserPositionAction) ListByUserId(args *user.UserPosition, reply *[]user.UserPosition) error {
+	o := orm.NewOrm()
+	o.Using("user")
+	num, err := o.QueryTable("user_position").Filter("user_id", args.UserId).All(&reply)
+	fmt.Println(num)
 	return err
 }
 

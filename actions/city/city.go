@@ -1,9 +1,9 @@
-package company
+package city
 
 import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/astaxie/beego/orm"
-	"dev.model.360baige.com/models/company"
+	"dev.model.360baige.com/models/city"
 	"dev.model.360baige.com/models/paginator"
 	"dev.model.360baige.com/models/batch"
 	"strings"
@@ -11,51 +11,45 @@ import (
 	"time"
 )
 
-type CompanyAction struct {
+type CityAction struct {
 }
 
 // 新增
-func (*CompanyAction) Add(args *company.Company, reply *company.Company) error {
+func (*CityAction) Add(args *city.City, reply *city.City) error {
 	o := orm.NewOrm()
-	o.Using("company")
+	o.Using("city")
 	id, err := o.Insert(args)
 	if err == nil {
 		reply.Id = id
 		reply.CreateTime = args.CreateTime
 		reply.UpdateTime = args.UpdateTime
 		reply.Type = args.Type
-		reply.Level = args.Level
-		reply.Logo = args.Logo
+		reply.ParentId = args.ParentId
 		reply.Name = args.Name
-		reply.ShortName = args.ShortName
-		reply.SubDomain = args.SubDomain
-		reply.ProvinceId = args.ProvinceId
-		reply.CityId = args.CityId
-		reply.DistrictId = args.DistrictId
-		reply.Address = args.Address
+		reply.Shortname = args.Shortname
+		reply.Pinyin = args.Pinyin
+		reply.Domain = args.Domain
 		reply.PositionX = args.PositionX
 		reply.PositionY = args.PositionY
-		reply.Remark = args.Remark
-		reply.Brief = args.Brief
-		reply.Status = args.Status
+		reply.Pos = args.Pos
 		
 	}
 	return err
 }
 
 // 查询 by Id
-func (*CompanyAction) FindById(args *company.Company, reply *company.Company) error {
+func (*CityAction) FindById(args *city.City, reply *city.City) error {
 	o := orm.NewOrm()
-	o.Using("company")
+	o.Using("city")
 	reply.Id = args.Id
 	err := o.Read(reply)
 	return err
 }
 
 // 更新 by Id
-func (*CompanyAction) UpdateById(args *company.Company, reply *company.Company) error {
+func (*CityAction) UpdateById(args *city.City, reply *city.City) error {
 	o := orm.NewOrm()
-	o.Using("company")
+	o.Using("city")
 	num, err := o.Update(args)
 	if err == nil {
 		if num > 0 {
@@ -66,19 +60,19 @@ func (*CompanyAction) UpdateById(args *company.Company, reply *company.Company) 
 }
 
 // 1. AddMultiple 增加多个
-func (*CompanyAction) AddMultiple(args []*company.Company, reply *batch.BackNumm) error {
+func (*CityAction) AddMultiple(args []*city.City, reply *batch.BackNumm) error {
 	o := orm.NewOrm()
-	o.Using("company") //查询数据库
+	o.Using("city") //查询数据库
 	num, err := o.InsertMulti(100, args)
 	reply.Num = num
 	return err
 }
 
 // 2.UpdateByIds 修改多个,默认更改状态为-1，只适合id,更改status,update_time
-func (*CompanyAction) UpdateByIds(args *batch.BatchModify, reply *batch.BackNumm) error {
+func (*CityAction) UpdateByIds(args *batch.BatchModify, reply *batch.BackNumm) error {
 	o := orm.NewOrm()
-	o.Using("company")            //查询数据库
-	qs := o.QueryTable("company") //查询表名
+	o.Using("city")            //查询数据库
+	qs := o.QueryTable("city") //查询表名
 	if (args.UpdateTime == 0) {
 		args.UpdateTime = time.Now().UnixNano() / 1e6
 	}
@@ -96,11 +90,11 @@ func (*CompanyAction) UpdateByIds(args *batch.BatchModify, reply *batch.BackNumm
 }
 
 // 3.查询List （按ID, 按页码）
-func (*CompanyAction) List(args *paginator.Paginator, reply *paginator.Paginator) error {
+func (*CityAction) List(args *paginator.Paginator, reply *paginator.Paginator) error {
 	o := orm.NewOrm()
-	o.Using("company")            //查询数据库
-	qs := o.QueryTable("company") //查询表名
-	qc := o.QueryTable("company") //查询表名
+	o.Using("city")            //查询数据库
+	qs := o.QueryTable("city") //查询表名
+	qc := o.QueryTable("city") //查询表名
 	filters := args.Filters
 	// json str struct
 	var items []paginator.PaginatorItem

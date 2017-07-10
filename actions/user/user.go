@@ -46,6 +46,33 @@ func (*UserAction) FindById(args *user.User, reply *user.User) error {
 	return err
 }
 
+// 查询 by username
+func (*UserAction) FindByUsername(args *user.User, reply *user.User) error {
+	o := orm.NewOrm()
+	o.Using("user")
+	reply.Username = args.Username
+	err := o.Read(reply, "username")
+	return err
+}
+
+// 查询 by email
+func (*UserAction) FindByEmail(args *user.User, reply *user.User) error {
+	o := orm.NewOrm()
+	o.Using("user")
+	reply.Email = args.Email
+	err := o.Read(reply, "email")
+	return err
+}
+
+// 查询 by phone
+func (*UserAction) FindByPhone(args *user.User, reply *user.User) error {
+	o := orm.NewOrm()
+	o.Using("user")
+	reply.Phone = args.Phone
+	err := o.Read(reply, "phone")
+	return err
+}
+
 // 更新 by Id
 func (*UserAction) UpdateById(args *user.User, reply *user.User) error {
 	o := orm.NewOrm()
