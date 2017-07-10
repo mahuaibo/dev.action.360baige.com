@@ -1,9 +1,9 @@
-package application
+package message
 
 import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/astaxie/beego/orm"
-	"dev.model.360baige.com/models/application"
+	"dev.model.360baige.com/models/message"
 	"dev.model.360baige.com/models/paginator"
 	"dev.model.360baige.com/models/batch"
 	"strings"
@@ -11,44 +11,52 @@ import (
 	"time"
 )
 
-type ApplicationAction struct {
+type MessageTempAction struct {
 }
 
 // 新增
-func (*ApplicationAction) Add(args *application.Application, reply *application.Application) error {
+func (*MessageTempAction) Add(args *message.MessageTemp, reply *message.MessageTemp) error {
 	o := orm.NewOrm()
-	o.Using("application")
+	o.Using("message")
 	id, err := o.Insert(args)
 	if err == nil {
 		reply.Id = id
 		reply.CreateTime = args.CreateTime
 		reply.UpdateTime = args.UpdateTime
-		reply.CompanyId = args.CompanyId
-		reply.UserId = args.UserId
-		reply.ApplicationTplId = args.ApplicationTplId
-		reply.Name = args.Name
-		reply.Image = args.Image
+		reply.Type = args.Type
+		reply.SendTime = args.SendTime
+		reply.SendCompanyId = args.SendCompanyId
+		reply.SendUserId = args.SendUserId
+		reply.SendUserPositionId = args.SendUserPositionId
+		reply.SendUserPositionType = args.SendUserPositionType
+		reply.SendDest = args.SendDest
+		reply.ReceiveTime = args.ReceiveTime
+		reply.ReceiveCompanyId = args.ReceiveCompanyId
+		reply.ReceiveUserId = args.ReceiveUserId
+		reply.ReceiveUserPositionId = args.ReceiveUserPositionId
+		reply.ReceiveUserPositionType = args.ReceiveUserPositionType
+		reply.ReceiveDest = args.ReceiveDest
+		reply.Content = args.Content
+		reply.Total = args.Total
 		reply.Status = args.Status
-		reply.StartTime = args.StartTime
-		reply.EndTime = args.EndTime
 		
 	}
 	return err
 }
 
 // 查询 by Id
-func (*ApplicationAction) FindById(args *application.Application, reply *application.Application) error {
+func (*MessageTempAction) FindById(args *message.MessageTemp, reply *message.MessageTemp) error {
 	o := orm.NewOrm()
-	o.Using("application")
+	o.Using("message")
 	reply.Id = args.Id
 	err := o.Read(reply)
 	return err
 }
 
 // 更新 by Id
-func (*ApplicationAction) UpdateById(args *application.Application, reply *application.Application) error {
+func (*MessageTempAction) UpdateById(args *message.MessageTemp, reply *message.MessageTemp) error {
 	o := orm.NewOrm()
-	o.Using("application")
+	o.Using("message")
 	num, err := o.Update(args)
 	if err == nil {
 		if num > 0 {
@@ -59,19 +67,19 @@ func (*ApplicationAction) UpdateById(args *application.Application, reply *appli
 }
 
 // 1. AddMultiple 增加多个
-func (*ApplicationAction) AddMultiple(args []*application.Application, reply *batch.BackNumm) error {
+func (*MessageTempAction) AddMultiple(args []*message.MessageTemp, reply *batch.BackNumm) error {
 	o := orm.NewOrm()
-	o.Using("application") //查询数据库
+	o.Using("message") //查询数据库
 	num, err := o.InsertMulti(100, args)
 	reply.Num = num
 	return err
 }
 
 // 2.UpdateByIds 修改多个,默认更改状态为-1，只适合id,更改status,update_time
-func (*ApplicationAction) UpdateByIds(args *batch.BatchModify, reply *batch.BackNumm) error {
+func (*MessageTempAction) UpdateByIds(args *batch.BatchModify, reply *batch.BackNumm) error {
 	o := orm.NewOrm()
-	o.Using("application")            //查询数据库
-	qs := o.QueryTable("application") //查询表名
+	o.Using("message")            //查询数据库
+	qs := o.QueryTable("message") //查询表名
 	if (args.UpdateTime == 0) {
 		args.UpdateTime = time.Now().UnixNano() / 1e6
 	}
@@ -89,11 +97,11 @@ func (*ApplicationAction) UpdateByIds(args *batch.BatchModify, reply *batch.Back
 }
 
 // 3.查询List （按ID, 按页码）
-func (*ApplicationAction) List(args *paginator.Paginator, reply *paginator.Paginator) error {
+func (*MessageTempAction) List(args *paginator.Paginator, reply *paginator.Paginator) error {
 	o := orm.NewOrm()
-	o.Using("application")            //查询数据库
-	qs := o.QueryTable("application") //查询表名
-	qc := o.QueryTable("application") //查询表名
+	o.Using("message")            //查询数据库
+	qs := o.QueryTable("message") //查询表名
+	qc := o.QueryTable("message") //查询表名
 	filters := args.Filters
 	// json str struct
 	var items []paginator.PaginatorItem
