@@ -72,6 +72,14 @@ func (*UserAction) FindByPhone(args *user.User, reply *user.User) error {
 	err := o.Read(reply, "phone")
 	return err
 }
+// 查询 by AccessTicket
+func (*UserAction) FindByAccessTicket(args *user.User, reply *user.User) error {
+	o := orm.NewOrm()
+	o.Using("user")
+	reply.AccessTicket = args.AccessTicket
+	err := o.Read(reply, "AccessTicket")
+	return err
+}
 
 // 更新 by Id
 func (*UserAction) UpdateById(args *user.User, reply *user.User) error {

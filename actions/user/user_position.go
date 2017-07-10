@@ -46,10 +46,10 @@ func (*UserPositionAction) FindById(args *user.UserPosition, reply *user.UserPos
 }
 
 // 查询 by UserId
-func (*UserPositionAction) ListByUserId(args *user.UserPosition, reply *[]user.UserPosition) error {
+func (*UserPositionAction) ListByUserId(args *user.UserPosition, reply *paginator.Paginator) error {
 	o := orm.NewOrm()
 	o.Using("user")
-	num, err := o.QueryTable("user_position").Filter("user_id", args.UserId).All(&reply)
+	num, err := o.QueryTable("user_position").Filter("user_id", args.UserId).Filter("status", 0).Values(&reply.List)
 	fmt.Println(num)
 	return err
 }
