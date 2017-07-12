@@ -6,6 +6,7 @@ import (
 	"dev.model.360baige.com/models/company"
 	"dev.model.360baige.com/models/paginator"
 	"dev.model.360baige.com/models/batch"
+	"dev.model.360baige.com/http/window"
 	"strings"
 	"encoding/json"
 	"time"
@@ -38,7 +39,7 @@ func (*CompanyAction) Add(args *company.Company, reply *company.Company) error {
 		reply.Remark = args.Remark
 		reply.Brief = args.Brief
 		reply.Status = args.Status
-		
+
 	}
 	return err
 }
@@ -65,6 +66,17 @@ func (*CompanyAction) UpdateById(args *company.Company, reply *company.Company) 
 	return err
 }
 
+// 查询 by
+func (*CompanyAction) ListAll(args *window.CompanyPaginator, reply *window.CompanyPaginator) error {
+	o := orm.NewOrm()
+	o.Using("company")
+	if args.PageSize == 0 {
+		args.PageSize = -1
+	}
+	num, err := o.QueryTable("company").SetCond(args.Cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply.List, args.Cols...)
+	reply.Total = num
+	return err
+}
 // 1. AddMultiple 增加多个
 func (*CompanyAction) AddMultiple(args []*company.Company, reply *batch.BackNumm) error {
 	o := orm.NewOrm()
@@ -137,6 +149,8 @@ func (*CompanyAction) List(args *paginator.Paginator, reply *paginator.Paginator
 	}
 	if (args.PageSize != 0) {
 		qs = qs.Limit(args.PageSize, start)
+	} else {
+		qs = qs.Limit(-1)
 	}
 	_, err := qs.Values(&reply.List)
 	return err

@@ -4,10 +4,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/astaxie/beego/orm"
 	"dev.model.360baige.com/models/user"
-	"dev.model.360baige.com/models/paginator"
 	"dev.model.360baige.com/models/batch"
+	"dev.model.360baige.com/http/window"
 	"strings"
-	"encoding/json"
 	"time"
 	"fmt"
 )
@@ -46,11 +45,15 @@ func (*UserPositionAction) FindById(args *user.UserPosition, reply *user.UserPos
 }
 
 // 查询 by UserId
-func (*UserPositionAction) ListByUserId(args *user.UserPosition, reply *paginator.Paginator) error {
+func (*UserPositionAction) ListAll(args *window.UserPositionPaginator, reply *window.UserPositionPaginator) error {
 	o := orm.NewOrm()
 	o.Using("user")
-	num, err := o.QueryTable("user_position").Filter("user_id", args.UserId).Filter("status", 0).Values(&reply.List)
+	if args.PageSize == 0 {
+		args.PageSize = -1
+	}
+	num, err := o.QueryTable("user_position").SetCond(args.Cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply.List, args.Cols...)
 	fmt.Println(num)
+	reply.Total = num
 	return err
 }
 
@@ -97,49 +100,22 @@ func (*UserPositionAction) UpdateByIds(args *batch.BatchModify, reply *batch.Bac
 	return err
 }
 
-// 3.查询List （按ID, 按页码）
-func (*UserPositionAction) List(args *paginator.Paginator, reply *paginator.Paginator) error {
+//获取身份,涉及分库
+func (*UserPositionAction) PositionListAllByUserId(args *window.UserPositionListPaginator, reply *window.UserPositionListPaginator) error {
 	o := orm.NewOrm()
-	o.Using("user")            //查询数据库
-	qs := o.QueryTable("user") //查询表名
-	qc := o.QueryTable("user") //查询表名
-	filters := args.Filters
-	// json str struct
-	var items []paginator.PaginatorItem
-	jsonErr := json.Unmarshal([]byte(filters), &items)
-	if (jsonErr == nil) {
-		for _, item := range items {
-			if (item.O == "") {
-				qs = qs.Filter(item.K, item.V)
-				qc = qc.Filter(item.K, item.V)
-			} else {
-				qc = qc.Filter(item.K+"__"+item.O, item.V)
-				qs = qs.Filter(item.K+"__"+item.O, item.V)
-			}
-		}
+	o.Using("user")
+	qb, _ := orm.NewQueryBuilder("mysql")
+	if args.PageSize == 0 {
+		args.PageSize = -1
 	}
-	start := 0
-	if ((args.Current - 1) > 0) {
-		start = (args.Current - 1) * args.PageSize
-	}
-	if (args.MarkID != 0 && args.Direction != 0) {
-		if (args.Direction == -1) {
-			qc = qc.Filter("id__gt", args.MarkID)
-			qs = qs.Filter("id__gt", args.MarkID)
-		} else {
-			qc = qc.Filter("id__lt", args.MarkID)
-			qs = qs.Filter("id__lt", args.MarkID)
-		}
-	}
-	reply.Total, _ = qc.Count()
-	if (args.Sord != "") {
-		qs = qs.OrderBy("-" + args.Sord)
-	} else {
-		qs = qs.OrderBy("-id")
-	}
-	if (args.PageSize != 0) {
-		qs = qs.Limit(args.PageSize, start)
-	}
-	_, err := qs.Values(&reply.List)
+	qb.Select(args.Cols...).
+		From("user_position").
+		InnerJoin("db_company.company").On("user_position.company_id = db_company.company.id").
+		Where("user_position.status>-1 ").And("user_position.user_id = ?").
+		OrderBy(args.OrderBy...).Desc()
+	// 导出 SQL 语句
+	sql := qb.String()
+	num, err := o.Raw(sql,args.Cond).QueryRows(&reply.List)
+	reply.Total = num
 	return err
 }
