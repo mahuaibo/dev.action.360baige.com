@@ -8,6 +8,7 @@ import (
 	"dev.model.360baige.com/http/window"
 	"strings"
 	"time"
+	//"encoding/json"
 	"fmt"
 )
 
@@ -48,10 +49,24 @@ func (*UserPositionAction) FindById(args *user.UserPosition, reply *user.UserPos
 func (*UserPositionAction) ListAll(args *window.UserPositionPaginator, reply *window.UserPositionPaginator) error {
 	o := orm.NewOrm()
 	o.Using("user")
+	cond := orm.NewCondition()
+	for _, c := range args.Cond {
+		if (c.Type == "And") {
+			cond = cond.And(c.Exprs, c.Args)
+		} else if (c.Type == "AndNot") {
+			cond = cond.AndNot(c.Exprs, c.Args)
+		} else if (c.Type == "Or") {
+			cond = cond.Or(c.Exprs, c.Args)
+		} else if (c.Type == "OrNot") {
+			cond = cond.OrNot(c.Exprs, c.Args)
+		}
+	}
 	if args.PageSize == 0 {
 		args.PageSize = -1
 	}
-	num, err := o.QueryTable("user_position").SetCond(args.Cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply.List, args.Cols...)
+	//cond := orm.NewCondition()
+	//cond1 := cond.And("user_id__exact", 1).And("status__gt", -1)
+	num, err := o.QueryTable("user_position").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply.List, args.Cols...)
 	fmt.Println(num)
 	reply.Total = num
 	return err
@@ -115,7 +130,7 @@ func (*UserPositionAction) PositionListAllByUserId(args *window.UserPositionList
 		OrderBy(args.OrderBy...).Desc()
 	// 导出 SQL 语句
 	sql := qb.String()
-	num, err := o.Raw(sql,args.Cond).QueryRows(&reply.List)
+	num, err := o.Raw(sql, args.Cond).QueryRows(&reply.List)
 	reply.Total = num
 	return err
 }

@@ -17,7 +17,7 @@ import (
 
 func init() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
-	orm.Debug = false
+	orm.Debug = true
 	orm.RegisterDataBase("default", "mysql", "demo2015:baige.2016@tcp(182.92.163.192:3306)/db_user?charset=utf8", 30)
 
 	orm.RegisterDataBase("account", "mysql", "demo2015:baige.2016@tcp(182.92.163.192:3306)/db_account?charset=utf8", 30)
