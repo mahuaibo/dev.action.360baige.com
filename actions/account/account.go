@@ -43,6 +43,18 @@ func (*AccountAction) FindById(args *account.Account, reply *account.Account) er
 	return err
 }
 
+//查询 by position
+func (*AccountAction) FindByUserPos(args *account.Account, reply *account.Account) error {
+	o := orm.NewOrm()
+	o.Using("account")
+	reply.CompanyId = args.CompanyId
+	reply.UserId = args.UserId
+	reply.UserPositionId = args.UserPositionId
+	reply.UserPositionType = args.UserPositionType
+	err := o.Read(reply, "company_id", "user_id", "user_position_id", "user_position_type")
+	return err
+}
+
 // 更新 by Id
 func (*AccountAction) UpdateById(args *account.Account, reply *account.Account) error {
 	o := orm.NewOrm()

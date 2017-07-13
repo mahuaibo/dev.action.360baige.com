@@ -49,7 +49,7 @@ func (*CompanyAction) FindById(args *company.Company, reply *company.Company) er
 	o := orm.NewOrm()
 	o.Using("company")
 	reply.Id = args.Id
-	err := o.Read(reply)
+	err := o.Read(reply,"id")
 	return err
 }
 
@@ -70,10 +70,19 @@ func (*CompanyAction) UpdateById(args *company.Company, reply *company.Company) 
 func (*CompanyAction) ListAll(args *window.CompanyPaginator, reply *window.CompanyPaginator) error {
 	o := orm.NewOrm()
 	o.Using("company")
-	if args.PageSize == 0 {
-		args.PageSize = -1
+	cond := orm.NewCondition()
+	for _, c := range args.Cond {
+		if (c.Type == "And") {
+			cond = cond.And(c.Exprs, c.Args)
+		} else if (c.Type == "AndNot") {
+			cond = cond.AndNot(c.Exprs, c.Args)
+		} else if (c.Type == "Or") {
+			cond = cond.Or(c.Exprs, c.Args)
+		} else if (c.Type == "OrNot") {
+			cond = cond.OrNot(c.Exprs, c.Args)
+		}
 	}
-	num, err := o.QueryTable("company").SetCond(args.Cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply.List, args.Cols...)
+	num, err := o.QueryTable("company").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply.List, args.Cols...)
 	reply.Total = num
 	return err
 }

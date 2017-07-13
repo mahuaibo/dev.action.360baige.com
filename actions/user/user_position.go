@@ -44,6 +44,15 @@ func (*UserPositionAction) FindById(args *user.UserPosition, reply *user.UserPos
 	err := o.Read(reply)
 	return err
 }
+// 查询 by Id
+func (*UserPositionAction) FindByAccessToken(args *user.UserPosition, reply *user.UserPosition) error {
+	o := orm.NewOrm()
+	o.Using("user")
+	reply.AccessToken = args.AccessToken
+	reply.Status = 0
+	err := o.Read(reply,"access_token","status")
+	return err
+}
 
 // 查询 by UserId
 func (*UserPositionAction) ListAll(args *window.UserPositionPaginator, reply *window.UserPositionPaginator) error {

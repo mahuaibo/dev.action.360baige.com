@@ -42,7 +42,8 @@ func (*UserAction) FindById(args *user.User, reply *user.User) error {
 	o := orm.NewOrm()
 	o.Using("user")
 	reply.Id = args.Id
-	err := o.Read(reply)
+	reply.Status = 0
+	err := o.Read(reply,"id","status")
 	return err
 }
 
@@ -51,7 +52,8 @@ func (*UserAction) FindByUsername(args *user.User, reply *user.User) error {
 	o := orm.NewOrm()
 	o.Using("user")
 	reply.Username = args.Username
-	err := o.Read(reply, "username")
+	reply.Status = 0
+	err := o.Read(reply, "username","status")
 	return err
 }
 
@@ -60,7 +62,8 @@ func (*UserAction) FindByEmail(args *user.User, reply *user.User) error {
 	o := orm.NewOrm()
 	o.Using("user")
 	reply.Email = args.Email
-	err := o.Read(reply, "email")
+	reply.Status = 0
+	err := o.Read(reply, "email","status")
 	return err
 }
 
@@ -69,7 +72,8 @@ func (*UserAction) FindByPhone(args *user.User, reply *user.User) error {
 	o := orm.NewOrm()
 	o.Using("user")
 	reply.Phone = args.Phone
-	err := o.Read(reply, "phone")
+	reply.Status = 0
+	err := o.Read(reply, "phone","status")
 	return err
 }
 // 查询 by AccessTicket
