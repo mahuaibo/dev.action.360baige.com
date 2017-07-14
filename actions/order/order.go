@@ -45,6 +45,14 @@ func (*OrderAction) FindById(args *order.Order, reply *order.Order) error {
 	err := o.Read(reply)
 	return err
 }
+// 查询 by Code
+func (*OrderAction) FindByCode(args *order.Order, reply *order.Order) error {
+	o := orm.NewOrm()
+	o.Using("order")
+	reply.Code = args.Code
+	err := o.Read(reply,"code")
+	return err
+}
 
 // 更新 by Id
 func (*OrderAction) UpdateById(args *order.Order, reply *order.Order) error {
