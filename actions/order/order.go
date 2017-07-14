@@ -4,10 +4,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/astaxie/beego/orm"
 	"dev.model.360baige.com/models/order"
-	"dev.model.360baige.com/models/paginator"
 	"dev.model.360baige.com/models/batch"
+	"dev.model.360baige.com/http/window"
 	"strings"
-	"encoding/json"
 	"time"
 )
 
@@ -90,49 +89,26 @@ func (*OrderAction) UpdateByIds(args *batch.BatchModify, reply *batch.BackNumm) 
 	return err
 }
 
-// 3.查询List （按ID, 按页码）
-func (*OrderAction) List(args *paginator.Paginator, reply *paginator.Paginator) error {
+//分页list
+func (*OrderAction) PageBy(args *window.OrderListPaginator, reply *window.OrderListPaginator) error {
 	o := orm.NewOrm()
-	o.Using("order")            //查询数据库
-	qs := o.QueryTable("order") //查询表名
-	qc := o.QueryTable("order") //查询表名
-	filters := args.Filters
-	// json str struct
-	var items []paginator.PaginatorItem
-	jsonErr := json.Unmarshal([]byte(filters), &items)
-	if (jsonErr == nil) {
-		for _, item := range items {
-			if (item.O == "") {
-				qs = qs.Filter(item.K, item.V)
-				qc = qc.Filter(item.K, item.V)
-			} else {
-				qc = qc.Filter(item.K+"__"+item.O, item.V)
-				qs = qs.Filter(item.K+"__"+item.O, item.V)
-			}
+	o.Using("order")
+	cond := orm.NewCondition()
+	for _, c := range args.Cond {
+		if (c.Type == "And") {
+			cond = cond.And(c.Exprs, c.Args)
+		} else if (c.Type == "AndNot") {
+			cond = cond.AndNot(c.Exprs, c.Args)
+		} else if (c.Type == "Or") {
+			cond = cond.Or(c.Exprs, c.Args)
+		} else if (c.Type == "OrNot") {
+			cond = cond.OrNot(c.Exprs, c.Args)
 		}
 	}
-	start := 0
-	if ((args.Current - 1) > 0) {
-		start = (args.Current - 1) * args.PageSize
-	}
-	if (args.MarkID != 0 && args.Direction != 0) {
-		if (args.Direction == -1) {
-			qc = qc.Filter("id__gt", args.MarkID)
-			qs = qs.Filter("id__gt", args.MarkID)
-		} else {
-			qc = qc.Filter("id__lt", args.MarkID)
-			qs = qs.Filter("id__lt", args.MarkID)
-		}
-	}
-	reply.Total, _ = qc.Count()
-	if (args.Sord != "") {
-		qs = qs.OrderBy("-" + args.Sord)
-	} else {
-		qs = qs.OrderBy("-id")
-	}
-	if (args.PageSize != 0) {
-		qs = qs.Limit(args.PageSize, start)
-	}
-	_, err := qs.Values(&reply.List)
+	num, err := o.QueryTable("order").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&reply.List, args.Cols...)
+	reply.CurrentSize = num
+	qs := o.QueryTable("order").SetCond(cond)
+	total, err := qs.Count()
+	reply.Total = total
 	return err
 }
