@@ -8,49 +8,16 @@ import (
 	"dev.model.360baige.com/http/window"
 	"strings"
 	"time"
-	//"encoding/json"
 	"fmt"
 )
 
-type UserPositionAction struct {
-}
-
-// 新增
-func (*UserPositionAction) Add(args *user.UserPosition, reply *user.UserPosition) error {
-	o := orm.NewOrm()
-	o.Using("user")
-	id, err := o.Insert(args)
-	if err == nil {
-		reply.Id = id
-		reply.CreateTime = args.CreateTime
-		reply.UpdateTime = args.UpdateTime
-		reply.Type = args.Type
-		reply.CompanyId = args.CompanyId
-		reply.UserId = args.UserId
-		reply.PersonId = args.PersonId
-		reply.AccessToken = args.AccessToken
-		reply.ExpireIn = args.ExpireIn
-		reply.Status = args.Status
-
-	}
-	return err
-}
-
-// 查询 by Id
-func (*UserPositionAction) FindById(args *user.UserPosition, reply *user.UserPosition) error {
-	o := orm.NewOrm()
-	o.Using("user")
-	reply.Id = args.Id
-	err := o.Read(reply)
-	return err
-}
 // 查询 by Id
 func (*UserPositionAction) FindByAccessToken(args *user.UserPosition, reply *user.UserPosition) error {
 	o := orm.NewOrm()
 	o.Using("user")
 	reply.AccessToken = args.AccessToken
 	reply.Status = 0
-	err := o.Read(reply,"access_token","status")
+	err := o.Read(reply, "access_token", "status")
 	return err
 }
 
@@ -78,28 +45,6 @@ func (*UserPositionAction) ListAll(args *window.UserPositionPaginator, reply *wi
 	num, err := o.QueryTable("user_position").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply.List, args.Cols...)
 	fmt.Println(num)
 	reply.Total = num
-	return err
-}
-
-// 更新 by Id
-func (*UserPositionAction) UpdateById(args *user.UserPosition, reply *user.UserPosition) error {
-	o := orm.NewOrm()
-	o.Using("user")
-	num, err := o.Update(args)
-	if err == nil {
-		if num > 0 {
-			reply.Id = args.Id
-		}
-	}
-	return err
-}
-
-// 1. AddMultiple 增加多个
-func (*UserPositionAction) AddMultiple(args []*user.UserPosition, reply *batch.BackNumm) error {
-	o := orm.NewOrm()
-	o.Using("user") //查询数据库
-	num, err := o.InsertMulti(100, args)
-	reply.Num = num
 	return err
 }
 
