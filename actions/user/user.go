@@ -174,38 +174,3 @@ func (*UserAction) List(args *paginator.Paginator, reply *paginator.Paginator) e
 	_, err := qs.Values(&reply.List)
 	return err
 }
-//
-//// 3.查询List （按ID, 按页码）
-//func (*UserAction) All(args *UserPaginator, reply *user.User) error {
-//	o := orm.NewOrm()
-//	o.Using("user")
-//	if args.PageSize == 0 {
-//		args.PageSize = -1
-//	}
-//	num, err := o.QueryTable("user").SetCond(args.Cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply, args.Cols...)
-//	fmt.Println("查询数量：", num)
-//	return err
-//}
-//
-//type UserPaginator struct {
-//	Cond     *orm.Condition
-//	Cols     []string
-//	OrderBy  []string
-//	List     []user.User
-//	Total    int64 //总数
-//	PageSize int64   //每页数量
-//	Current  int64   //当前页码
-//	CurrentSize  int64   //当前页码
-//}
-//
-//func (*UserAction) PageBy(args *UserPaginator, reply *UserPaginator) error {
-//	o := orm.NewOrm()
-//	o.Using("user")
-//	qs := o.QueryTable("user").SetCond(args.Cond)
-//	total, err := qs.Count()
-//	reply.Total = total
-//	num, err := qs.OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&reply.List, args.Cols...)
-//	fmt.Println("查询数量：", num)
-//	reply.CurrentSize = num
-//	return err
-//}
