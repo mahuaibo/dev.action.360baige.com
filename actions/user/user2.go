@@ -4,9 +4,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/astaxie/beego/orm"
 	"dev.model.360baige.com/models/user"
-	"dev.model.360baige.com/models/batch"
-	"strings"
-	"time"
 )
 
 type UserAction struct {
