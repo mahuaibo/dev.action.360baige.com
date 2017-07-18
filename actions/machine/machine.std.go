@@ -5,13 +5,16 @@ import (
 	"github.com/astaxie/beego/orm"
 	"dev.model.360baige.com/models/machine"
 	"dev.model.360baige.com/action"
+	"dev.action.360baige.com/utils"
+	"time"
+	"encoding/json"
 )
 
 type MachineAction struct {
 }
 
 // 1
-func (*MachineAction) Add(args *machine.Machine, reply *machine.Machine) error {
+func (*MachineAction) Add(args *machine.Account, reply *machine.Machine) error {
 	o := orm.NewOrm()
 	o.Using("machine")
 	id, err := o.Insert(args)
@@ -22,7 +25,7 @@ func (*MachineAction) Add(args *machine.Machine, reply *machine.Machine) error {
 // 2
 func (*MachineAction) AddMultiple(args []*machine.Machine, reply *action.Num) error {
 	o := orm.NewOrm()
-	o.Using("machine") //查询数据库
+	o.Using("machine")
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
@@ -42,23 +45,8 @@ func (*MachineAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num)
 	o := orm.NewOrm()
 	o.Using("machine")
 
-	var values orm.Params
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
-
-	for _, item := range args.UpdateList {
-		values[item.Key] = item.Val
-	}
+	cond := utils.ConvertCond(args.CondList)
+	values := utils.ConvertValues(args.UpdateList)
 
 	num, err := o.QueryTable("machine").SetCond(cond).Update(values)
 	reply.Value = num
@@ -70,13 +58,10 @@ func (*MachineAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num)
 	o := orm.NewOrm()
 	o.Using("machine")
 
-	var values orm.Params
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
 
-	values["status"] = -1
-
-	num, err := o.QueryTable("machine").SetCond(cond).Update(values)
+	num, err := o.QueryTable("machine").SetCond(cond).Update(orm.Params{"update_time": time.Now().UnixNano() / 1e6, "status": -1})
 	reply.Value = num
 	return err
 }
@@ -86,13 +71,10 @@ func (*MachineAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num)
 	o := orm.NewOrm()
 	o.Using("machine")
 
-	var values orm.Params
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
 
-	for _, item := range args.UpdateList {
-		values[item.Key] = item.Val
-	}
+	values := utils.ConvertValues(args.UpdateList)
 
 	num, err := o.QueryTable("machine").SetCond(cond).Update(values)
 	reply.Value = num
@@ -104,21 +86,9 @@ func (*MachineAction) FindByCond(args *action.FindByCond, reply *machine.Machine
 	o := orm.NewOrm()
 	o.Using("machine")
 
-	cond := orm.NewCondition()
+	cond := utils.ConvertCond(args.CondList)
 
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
-
-	err := o.QueryTable("machine").SetCond(cond).One(&reply, args.Fileds...)
+	err := o.QueryTable("machine").SetCond(cond).One(reply, args.Fileds...)
 	return err
 }
 
@@ -127,23 +97,9 @@ func (*MachineAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num)
 	o := orm.NewOrm()
 	o.Using("machine")
 
-	var values orm.Params
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
+	cond := utils.ConvertCond(args.CondList)
 
-	values["status"] = -1
-
-	num, err := o.QueryTable("machine").SetCond(cond).Update(values)
+	num, err := o.QueryTable("machine").SetCond(cond).Update(orm.Params{"update_time": time.Now().UnixNano() / 1e6, "status": -1})
 	reply.Value = num
 	return err
 }
@@ -152,22 +108,13 @@ func (*MachineAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num)
 func (*MachineAction) ListByCond(args *action.ListByCond, reply *[]machine.Machine) error {
 	o := orm.NewOrm()
 	o.Using("machine")
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
+
+	cond := utils.ConvertCond(args.CondList)
+
 	if args.PageSize == 0 {
 		args.PageSize = -1
 	}
-	_, err := o.QueryTable("machine").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply, args.Cols...)
+	_, err := o.QueryTable("machine").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(reply, args.Cols...)
 	return err
 }
 
@@ -175,21 +122,24 @@ func (*MachineAction) ListByCond(args *action.ListByCond, reply *[]machine.Machi
 func (*MachineAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
 	o := orm.NewOrm()
 	o.Using("machine")
-	cond := orm.NewCondition()
 
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
+	cond := utils.ConvertCond(args.CondList)
+
+	if args.PageSize == 0 {
+		args.PageSize = 20
 	}
+	if args.CurrentSize == 0 {
+		args.CurrentSize = 1
+	}
+
+	if args.OrderBy == nil || len(args.OrderBy) == 0 {
+		args.OrderBy = []string{"id"}
+	}
+
 	var err error
-	reply.CurrentSize, err = o.QueryTable("machine").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&reply.List, args.Cols...)
+	var replyList []machine.Machine
+	reply.CurrentSize, err = o.QueryTable("machine").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&replyList, args.Cols...)
 	reply.Total, err = o.QueryTable("machine").SetCond(cond).Count()
+	reply.Json, _ = json.Marshal(replyList)
 	return err
 }

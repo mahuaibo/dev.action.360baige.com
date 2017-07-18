@@ -6,13 +6,15 @@ import (
 	"dev.model.360baige.com/models/user"
 	"dev.model.360baige.com/action"
 	"dev.action.360baige.com/utils"
+	"time"
+	"encoding/json"
 )
 
 type UserAction struct {
 }
 
 // 1
-func (*UserAction) Add(args *user.User, reply *user.User) error {
+func (*UserAction) Add(args *user.Account, reply *user.User) error {
 	o := orm.NewOrm()
 	o.Using("user")
 	id, err := o.Insert(args)
@@ -23,7 +25,7 @@ func (*UserAction) Add(args *user.User, reply *user.User) error {
 // 2
 func (*UserAction) AddMultiple(args []*user.User, reply *action.Num) error {
 	o := orm.NewOrm()
-	o.Using("user") //查询数据库
+	o.Using("user")
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
@@ -43,24 +45,7 @@ func (*UserAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) er
 	o := orm.NewOrm()
 	o.Using("user")
 
-	//cond := orm.NewCondition()
-	//for _, item := range args.CondList {
-	//	if (item.Type == "And") {
-	//		cond = cond.And(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	} else if (item.Type == "AndNot") {
-	//		cond = cond.AndNot(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	} else if (item.Type == "Or") {
-	//		cond = cond.Or(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	} else if (item.Type == "OrNot") {
-	//		cond = cond.OrNot(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	}
-	//}
 	cond := utils.ConvertCond(args.CondList)
-
-	//values := orm.Params{}
-	//for _, item := range args.UpdateList {
-	//	values[item.Key] = utils.ConvertUint8ToString(item.Val)
-	//}
 	values := utils.ConvertValues(args.UpdateList)
 
 	num, err := o.QueryTable("user").SetCond(cond).Update(values)
@@ -76,7 +61,7 @@ func (*UserAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) er
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
 
-	num, err := o.QueryTable("user").SetCond(cond).Update(orm.Params{"status": -1})
+	num, err := o.QueryTable("user").SetCond(cond).Update(orm.Params{"update_time": time.Now().UnixNano() / 1e6, "status": -1})
 	reply.Value = num
 	return err
 }
@@ -89,10 +74,6 @@ func (*UserAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) er
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
 
-	//values := orm.Params{}
-	//for _, item := range args.UpdateList {
-	//	values[item.Key] = utils.ConvertUint8ToString(item.Val)
-	//}
 	values := utils.ConvertValues(args.UpdateList)
 
 	num, err := o.QueryTable("user").SetCond(cond).Update(values)
@@ -105,21 +86,9 @@ func (*UserAction) FindByCond(args *action.FindByCond, reply *user.User) error {
 	o := orm.NewOrm()
 	o.Using("user")
 
-	//cond := orm.NewCondition()
-	//for _, item := range args.CondList {
-	//	if (item.Type == "And") {
-	//		cond = cond.And(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	} else if (item.Type == "AndNot") {
-	//		cond = cond.AndNot(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	} else if (item.Type == "Or") {
-	//		cond = cond.Or(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	} else if (item.Type == "OrNot") {
-	//		cond = cond.OrNot(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	}
-	//}
 	cond := utils.ConvertCond(args.CondList)
 
-	err := o.QueryTable("user").SetCond(cond).One(&reply, args.Fileds...)
+	err := o.QueryTable("user").SetCond(cond).One(reply, args.Fileds...)
 	return err
 }
 
@@ -128,21 +97,9 @@ func (*UserAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) er
 	o := orm.NewOrm()
 	o.Using("user")
 
-	//cond := orm.NewCondition()
-	//for _, item := range args.CondList {
-	//	if (item.Type == "And") {
-	//		cond = cond.And(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	} else if (item.Type == "AndNot") {
-	//		cond = cond.AndNot(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	} else if (item.Type == "Or") {
-	//		cond = cond.Or(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	} else if (item.Type == "OrNot") {
-	//		cond = cond.OrNot(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	}
-	//}
 	cond := utils.ConvertCond(args.CondList)
 
-	num, err := o.QueryTable("user").SetCond(cond).Update(orm.Params{"status": -1})
+	num, err := o.QueryTable("user").SetCond(cond).Update(orm.Params{"update_time": time.Now().UnixNano() / 1e6, "status": -1})
 	reply.Value = num
 	return err
 }
@@ -152,25 +109,12 @@ func (*UserAction) ListByCond(args *action.ListByCond, reply *[]user.User) error
 	o := orm.NewOrm()
 	o.Using("user")
 
-	//cond := orm.NewCondition()
-	//for _, item := range args.CondList {
-	//	if (item.Type == "And") {
-	//		cond = cond.And(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	} else if (item.Type == "AndNot") {
-	//		cond = cond.AndNot(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	} else if (item.Type == "Or") {
-	//		cond = cond.Or(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	} else if (item.Type == "OrNot") {
-	//		cond = cond.OrNot(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	}
-	//}
-
 	cond := utils.ConvertCond(args.CondList)
 
 	if args.PageSize == 0 {
 		args.PageSize = -1
 	}
-	_, err := o.QueryTable("user").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply, args.Cols...)
+	_, err := o.QueryTable("user").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(reply, args.Cols...)
 	return err
 }
 
@@ -179,22 +123,23 @@ func (*UserAction) PageByCond(args *action.PageByCond, reply *action.PageByCond)
 	o := orm.NewOrm()
 	o.Using("user")
 
-	//cond := orm.NewCondition()
-	//for _, item := range args.CondList {
-	//	if (item.Type == "And") {
-	//		cond = cond.And(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	} else if (item.Type == "AndNot") {
-	//		cond = cond.AndNot(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	} else if (item.Type == "Or") {
-	//		cond = cond.Or(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	} else if (item.Type == "OrNot") {
-	//		cond = cond.OrNot(item.Key, utils.ConvertUint8ToString(item.Val))
-	//	}
-	//}
 	cond := utils.ConvertCond(args.CondList)
 
+	if args.PageSize == 0 {
+		args.PageSize = 20
+	}
+	if args.CurrentSize == 0 {
+		args.CurrentSize = 1
+	}
+
+	if args.OrderBy == nil || len(args.OrderBy) == 0 {
+		args.OrderBy = []string{"id"}
+	}
+
 	var err error
-	reply.CurrentSize, err = o.QueryTable("user").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&reply.List, args.Cols...)
+	var replyList []user.User
+	reply.CurrentSize, err = o.QueryTable("user").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&replyList, args.Cols...)
 	reply.Total, err = o.QueryTable("user").SetCond(cond).Count()
+	reply.Json, _ = json.Marshal(replyList)
 	return err
 }

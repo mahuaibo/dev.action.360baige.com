@@ -6,6 +6,8 @@ import (
 	"dev.model.360baige.com/models/account"
 	"dev.model.360baige.com/action"
 	"dev.action.360baige.com/utils"
+	"time"
+	"encoding/json"
 )
 
 type AccountAction struct {
@@ -23,7 +25,7 @@ func (*AccountAction) Add(args *account.Account, reply *account.Account) error {
 // 2
 func (*AccountAction) AddMultiple(args []*account.Account, reply *action.Num) error {
 	o := orm.NewOrm()
-	o.Using("account") //查询数据库
+	o.Using("account")
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
@@ -43,23 +45,8 @@ func (*AccountAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num)
 	o := orm.NewOrm()
 	o.Using("account")
 
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, utils.ConvertUint8ToString(item.Val))
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, utils.ConvertUint8ToString(item.Val))
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, utils.ConvertUint8ToString(item.Val))
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, utils.ConvertUint8ToString(item.Val))
-		}
-	}
-
-	values := orm.Params{}
-	for _, item := range args.UpdateList {
-		values[item.Key] = utils.ConvertUint8ToString(item.Val)
-	}
+	cond := utils.ConvertCond(args.CondList)
+	values := utils.ConvertValues(args.UpdateList)
 
 	num, err := o.QueryTable("account").SetCond(cond).Update(values)
 	reply.Value = num
@@ -74,10 +61,7 @@ func (*AccountAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num)
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
 
-	values := orm.Params{}
-	values["status"] = -1
-
-	num, err := o.QueryTable("account").SetCond(cond).Update(values)
+	num, err := o.QueryTable("account").SetCond(cond).Update(orm.Params{"update_time": time.Now().UnixNano() / 1e6, "status": -1})
 	reply.Value = num
 	return err
 }
@@ -90,10 +74,7 @@ func (*AccountAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num)
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
 
-	values := orm.Params{}
-	for _, item := range args.UpdateList {
-		values[item.Key] = utils.ConvertUint8ToString(item.Val)
-	}
+	values := utils.ConvertValues(args.UpdateList)
 
 	num, err := o.QueryTable("account").SetCond(cond).Update(values)
 	reply.Value = num
@@ -105,20 +86,9 @@ func (*AccountAction) FindByCond(args *action.FindByCond, reply *account.Account
 	o := orm.NewOrm()
 	o.Using("account")
 
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, utils.ConvertUint8ToString(item.Val))
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, utils.ConvertUint8ToString(item.Val))
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, utils.ConvertUint8ToString(item.Val))
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, utils.ConvertUint8ToString(item.Val))
-		}
-	}
+	cond := utils.ConvertCond(args.CondList)
 
-	err := o.QueryTable("account").SetCond(cond).One(&reply, args.Fileds...)
+	err := o.QueryTable("account").SetCond(cond).One(reply, args.Fileds...)
 	return err
 }
 
@@ -127,23 +97,9 @@ func (*AccountAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num)
 	o := orm.NewOrm()
 	o.Using("account")
 
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, utils.ConvertUint8ToString(item.Val))
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, utils.ConvertUint8ToString(item.Val))
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, utils.ConvertUint8ToString(item.Val))
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, utils.ConvertUint8ToString(item.Val))
-		}
-	}
+	cond := utils.ConvertCond(args.CondList)
 
-	values := orm.Params{}
-	values["status"] = -1
-
-	num, err := o.QueryTable("account").SetCond(cond).Update(values)
+	num, err := o.QueryTable("account").SetCond(cond).Update(orm.Params{"update_time": time.Now().UnixNano() / 1e6, "status": -1})
 	reply.Value = num
 	return err
 }
@@ -153,23 +109,12 @@ func (*AccountAction) ListByCond(args *action.ListByCond, reply *[]account.Accou
 	o := orm.NewOrm()
 	o.Using("account")
 
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, utils.ConvertUint8ToString(item.Val))
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, utils.ConvertUint8ToString(item.Val))
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, utils.ConvertUint8ToString(item.Val))
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, utils.ConvertUint8ToString(item.Val))
-		}
-	}
+	cond := utils.ConvertCond(args.CondList)
 
 	if args.PageSize == 0 {
 		args.PageSize = -1
 	}
-	_, err := o.QueryTable("account").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply, args.Cols...)
+	_, err := o.QueryTable("account").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(reply, args.Cols...)
 	return err
 }
 
@@ -178,21 +123,23 @@ func (*AccountAction) PageByCond(args *action.PageByCond, reply *action.PageByCo
 	o := orm.NewOrm()
 	o.Using("account")
 
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, utils.ConvertUint8ToString(item.Val))
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, utils.ConvertUint8ToString(item.Val))
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, utils.ConvertUint8ToString(item.Val))
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, utils.ConvertUint8ToString(item.Val))
-		}
+	cond := utils.ConvertCond(args.CondList)
+
+	if args.PageSize == 0 {
+		args.PageSize = 20
+	}
+	if args.CurrentSize == 0 {
+		args.CurrentSize = 1
+	}
+
+	if args.OrderBy == nil || len(args.OrderBy) == 0 {
+		args.OrderBy = []string{"id"}
 	}
 
 	var err error
-	reply.CurrentSize, err = o.QueryTable("account").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&reply.List, args.Cols...)
+	var replyList []account.Account
+	reply.CurrentSize, err = o.QueryTable("account").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&replyList, args.Cols...)
 	reply.Total, err = o.QueryTable("account").SetCond(cond).Count()
+	reply.Json, _ = json.Marshal(replyList)
 	return err
 }

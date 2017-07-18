@@ -4,20 +4,17 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/astaxie/beego/orm"
 	"dev.model.360baige.com/models/company"
-	"dev.model.360baige.com/models/paginator"
-	"dev.model.360baige.com/models/batch"
-	"dev.model.360baige.com/http/window"
-	"strings"
-	"encoding/json"
-	"time"
 	"dev.model.360baige.com/action"
+	"dev.action.360baige.com/utils"
+	"time"
+	"encoding/json"
 )
 
 type CompanyAction struct {
 }
 
 // 1
-func (*CompanyAction) Add(args *company.Company, reply *company.Company) error {
+func (*CompanyAction) Add(args *company.Account, reply *company.Company) error {
 	o := orm.NewOrm()
 	o.Using("company")
 	id, err := o.Insert(args)
@@ -28,7 +25,7 @@ func (*CompanyAction) Add(args *company.Company, reply *company.Company) error {
 // 2
 func (*CompanyAction) AddMultiple(args []*company.Company, reply *action.Num) error {
 	o := orm.NewOrm()
-	o.Using("company") //查询数据库
+	o.Using("company")
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
@@ -48,23 +45,8 @@ func (*CompanyAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num)
 	o := orm.NewOrm()
 	o.Using("company")
 
-	var values orm.Params
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
-
-	for _, item := range args.UpdateList {
-		values[item.Key] = item.Val
-	}
+	cond := utils.ConvertCond(args.CondList)
+	values := utils.ConvertValues(args.UpdateList)
 
 	num, err := o.QueryTable("company").SetCond(cond).Update(values)
 	reply.Value = num
@@ -76,13 +58,10 @@ func (*CompanyAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num)
 	o := orm.NewOrm()
 	o.Using("company")
 
-	var values orm.Params
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
 
-	values["status"] = -1
-
-	num, err := o.QueryTable("company").SetCond(cond).Update(values)
+	num, err := o.QueryTable("company").SetCond(cond).Update(orm.Params{"update_time": time.Now().UnixNano() / 1e6, "status": -1})
 	reply.Value = num
 	return err
 }
@@ -92,13 +71,10 @@ func (*CompanyAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num)
 	o := orm.NewOrm()
 	o.Using("company")
 
-	var values orm.Params
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
 
-	for _, item := range args.UpdateList {
-		values[item.Key] = item.Val
-	}
+	values := utils.ConvertValues(args.UpdateList)
 
 	num, err := o.QueryTable("company").SetCond(cond).Update(values)
 	reply.Value = num
@@ -110,21 +86,9 @@ func (*CompanyAction) FindByCond(args *action.FindByCond, reply *company.Company
 	o := orm.NewOrm()
 	o.Using("company")
 
-	cond := orm.NewCondition()
+	cond := utils.ConvertCond(args.CondList)
 
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
-
-	err := o.QueryTable("company").SetCond(cond).One(&reply, args.Fileds...)
+	err := o.QueryTable("company").SetCond(cond).One(reply, args.Fileds...)
 	return err
 }
 
@@ -133,23 +97,9 @@ func (*CompanyAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num)
 	o := orm.NewOrm()
 	o.Using("company")
 
-	var values orm.Params
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
+	cond := utils.ConvertCond(args.CondList)
 
-	values["status"] = -1
-
-	num, err := o.QueryTable("company").SetCond(cond).Update(values)
+	num, err := o.QueryTable("company").SetCond(cond).Update(orm.Params{"update_time": time.Now().UnixNano() / 1e6, "status": -1})
 	reply.Value = num
 	return err
 }
@@ -158,22 +108,13 @@ func (*CompanyAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num)
 func (*CompanyAction) ListByCond(args *action.ListByCond, reply *[]company.Company) error {
 	o := orm.NewOrm()
 	o.Using("company")
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
+
+	cond := utils.ConvertCond(args.CondList)
+
 	if args.PageSize == 0 {
 		args.PageSize = -1
 	}
-	_, err := o.QueryTable("company").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply, args.Cols...)
+	_, err := o.QueryTable("company").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(reply, args.Cols...)
 	return err
 }
 
@@ -181,21 +122,24 @@ func (*CompanyAction) ListByCond(args *action.ListByCond, reply *[]company.Compa
 func (*CompanyAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
 	o := orm.NewOrm()
 	o.Using("company")
-	cond := orm.NewCondition()
 
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
+	cond := utils.ConvertCond(args.CondList)
+
+	if args.PageSize == 0 {
+		args.PageSize = 20
 	}
+	if args.CurrentSize == 0 {
+		args.CurrentSize = 1
+	}
+
+	if args.OrderBy == nil || len(args.OrderBy) == 0 {
+		args.OrderBy = []string{"id"}
+	}
+
 	var err error
-	reply.CurrentSize, err = o.QueryTable("company").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&reply.List, args.Cols...)
+	var replyList []company.Company
+	reply.CurrentSize, err = o.QueryTable("company").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&replyList, args.Cols...)
 	reply.Total, err = o.QueryTable("company").SetCond(cond).Count()
+	reply.Json, _ = json.Marshal(replyList)
 	return err
 }

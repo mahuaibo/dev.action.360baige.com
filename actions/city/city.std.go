@@ -5,13 +5,16 @@ import (
 	"github.com/astaxie/beego/orm"
 	"dev.model.360baige.com/models/city"
 	"dev.model.360baige.com/action"
+	"dev.action.360baige.com/utils"
+	"time"
+	"encoding/json"
 )
 
 type CityAction struct {
 }
 
 // 1
-func (*CityAction) Add(args *city.City, reply *city.City) error {
+func (*CityAction) Add(args *city.Account, reply *city.City) error {
 	o := orm.NewOrm()
 	o.Using("city")
 	id, err := o.Insert(args)
@@ -22,7 +25,7 @@ func (*CityAction) Add(args *city.City, reply *city.City) error {
 // 2
 func (*CityAction) AddMultiple(args []*city.City, reply *action.Num) error {
 	o := orm.NewOrm()
-	o.Using("city") //查询数据库
+	o.Using("city")
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
@@ -42,23 +45,8 @@ func (*CityAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) er
 	o := orm.NewOrm()
 	o.Using("city")
 
-	var values orm.Params
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
-
-	for _, item := range args.UpdateList {
-		values[item.Key] = item.Val
-	}
+	cond := utils.ConvertCond(args.CondList)
+	values := utils.ConvertValues(args.UpdateList)
 
 	num, err := o.QueryTable("city").SetCond(cond).Update(values)
 	reply.Value = num
@@ -70,13 +58,10 @@ func (*CityAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) er
 	o := orm.NewOrm()
 	o.Using("city")
 
-	var values orm.Params
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
 
-	values["status"] = -1
-
-	num, err := o.QueryTable("city").SetCond(cond).Update(values)
+	num, err := o.QueryTable("city").SetCond(cond).Update(orm.Params{"update_time": time.Now().UnixNano() / 1e6, "status": -1})
 	reply.Value = num
 	return err
 }
@@ -86,13 +71,10 @@ func (*CityAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) er
 	o := orm.NewOrm()
 	o.Using("city")
 
-	var values orm.Params
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
 
-	for _, item := range args.UpdateList {
-		values[item.Key] = item.Val
-	}
+	values := utils.ConvertValues(args.UpdateList)
 
 	num, err := o.QueryTable("city").SetCond(cond).Update(values)
 	reply.Value = num
@@ -104,21 +86,9 @@ func (*CityAction) FindByCond(args *action.FindByCond, reply *city.City) error {
 	o := orm.NewOrm()
 	o.Using("city")
 
-	cond := orm.NewCondition()
+	cond := utils.ConvertCond(args.CondList)
 
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
-
-	err := o.QueryTable("city").SetCond(cond).One(&reply, args.Fileds...)
+	err := o.QueryTable("city").SetCond(cond).One(reply, args.Fileds...)
 	return err
 }
 
@@ -127,23 +97,9 @@ func (*CityAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) er
 	o := orm.NewOrm()
 	o.Using("city")
 
-	var values orm.Params
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
+	cond := utils.ConvertCond(args.CondList)
 
-	values["status"] = -1
-
-	num, err := o.QueryTable("city").SetCond(cond).Update(values)
+	num, err := o.QueryTable("city").SetCond(cond).Update(orm.Params{"update_time": time.Now().UnixNano() / 1e6, "status": -1})
 	reply.Value = num
 	return err
 }
@@ -152,22 +108,13 @@ func (*CityAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) er
 func (*CityAction) ListByCond(args *action.ListByCond, reply *[]city.City) error {
 	o := orm.NewOrm()
 	o.Using("city")
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
+
+	cond := utils.ConvertCond(args.CondList)
+
 	if args.PageSize == 0 {
 		args.PageSize = -1
 	}
-	_, err := o.QueryTable("city").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply, args.Cols...)
+	_, err := o.QueryTable("city").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(reply, args.Cols...)
 	return err
 }
 
@@ -175,21 +122,24 @@ func (*CityAction) ListByCond(args *action.ListByCond, reply *[]city.City) error
 func (*CityAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
 	o := orm.NewOrm()
 	o.Using("city")
-	cond := orm.NewCondition()
 
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
+	cond := utils.ConvertCond(args.CondList)
+
+	if args.PageSize == 0 {
+		args.PageSize = 20
 	}
+	if args.CurrentSize == 0 {
+		args.CurrentSize = 1
+	}
+
+	if args.OrderBy == nil || len(args.OrderBy) == 0 {
+		args.OrderBy = []string{"id"}
+	}
+
 	var err error
-	reply.CurrentSize, err = o.QueryTable("city").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&reply.List, args.Cols...)
+	var replyList []city.City
+	reply.CurrentSize, err = o.QueryTable("city").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&replyList, args.Cols...)
 	reply.Total, err = o.QueryTable("city").SetCond(cond).Count()
+	reply.Json, _ = json.Marshal(replyList)
 	return err
 }

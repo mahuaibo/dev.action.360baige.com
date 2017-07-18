@@ -4,19 +4,17 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/astaxie/beego/orm"
 	"dev.model.360baige.com/models/message"
-	"dev.model.360baige.com/models/paginator"
-	"dev.model.360baige.com/models/batch"
-	"strings"
-	"encoding/json"
-	"time"
 	"dev.model.360baige.com/action"
+	"dev.action.360baige.com/utils"
+	"time"
+	"encoding/json"
 )
 
 type MessageSendAction struct {
 }
 
 // 1
-func (*MessageSendAction) Add(args *message.MessageSend, reply *message.MessageSend) error {
+func (*MessageSendAction) Add(args *message.Account, reply *message.MessageSend) error {
 	o := orm.NewOrm()
 	o.Using("message")
 	id, err := o.Insert(args)
@@ -27,7 +25,7 @@ func (*MessageSendAction) Add(args *message.MessageSend, reply *message.MessageS
 // 2
 func (*MessageSendAction) AddMultiple(args []*message.MessageSend, reply *action.Num) error {
 	o := orm.NewOrm()
-	o.Using("message") //查询数据库
+	o.Using("message")
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
@@ -47,23 +45,8 @@ func (*MessageSendAction) UpdateByCond(args *action.UpdateByCond, reply *action.
 	o := orm.NewOrm()
 	o.Using("message")
 
-	var values orm.Params
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
-
-	for _, item := range args.UpdateList {
-		values[item.Key] = item.Val
-	}
+	cond := utils.ConvertCond(args.CondList)
+	values := utils.ConvertValues(args.UpdateList)
 
 	num, err := o.QueryTable("message_send").SetCond(cond).Update(values)
 	reply.Value = num
@@ -75,13 +58,10 @@ func (*MessageSendAction) DeleteById(args *action.DeleteByIdCond, reply *action.
 	o := orm.NewOrm()
 	o.Using("message")
 
-	var values orm.Params
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
 
-	values["status"] = -1
-
-	num, err := o.QueryTable("message_send").SetCond(cond).Update(values)
+	num, err := o.QueryTable("message_send").SetCond(cond).Update(orm.Params{"update_time": time.Now().UnixNano() / 1e6, "status": -1})
 	reply.Value = num
 	return err
 }
@@ -91,13 +71,10 @@ func (*MessageSendAction) UpdateById(args *action.UpdateByIdCond, reply *action.
 	o := orm.NewOrm()
 	o.Using("message")
 
-	var values orm.Params
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
 
-	for _, item := range args.UpdateList {
-		values[item.Key] = item.Val
-	}
+	values := utils.ConvertValues(args.UpdateList)
 
 	num, err := o.QueryTable("message_send").SetCond(cond).Update(values)
 	reply.Value = num
@@ -109,21 +86,9 @@ func (*MessageSendAction) FindByCond(args *action.FindByCond, reply *message.Mes
 	o := orm.NewOrm()
 	o.Using("message")
 
-	cond := orm.NewCondition()
+	cond := utils.ConvertCond(args.CondList)
 
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
-
-	err := o.QueryTable("message_send").SetCond(cond).One(&reply, args.Fileds...)
+	err := o.QueryTable("message_send").SetCond(cond).One(reply, args.Fileds...)
 	return err
 }
 
@@ -132,23 +97,9 @@ func (*MessageSendAction) DeleteByCond(args *action.DeleteByCond, reply *action.
 	o := orm.NewOrm()
 	o.Using("message")
 
-	var values orm.Params
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
+	cond := utils.ConvertCond(args.CondList)
 
-	values["status"] = -1
-
-	num, err := o.QueryTable("message_send").SetCond(cond).Update(values)
+	num, err := o.QueryTable("message_send").SetCond(cond).Update(orm.Params{"update_time": time.Now().UnixNano() / 1e6, "status": -1})
 	reply.Value = num
 	return err
 }
@@ -157,22 +108,13 @@ func (*MessageSendAction) DeleteByCond(args *action.DeleteByCond, reply *action.
 func (*MessageSendAction) ListByCond(args *action.ListByCond, reply *[]message.MessageSend) error {
 	o := orm.NewOrm()
 	o.Using("message")
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
+
+	cond := utils.ConvertCond(args.CondList)
+
 	if args.PageSize == 0 {
 		args.PageSize = -1
 	}
-	_, err := o.QueryTable("message_send").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply, args.Cols...)
+	_, err := o.QueryTable("message_send").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(reply, args.Cols...)
 	return err
 }
 
@@ -180,21 +122,24 @@ func (*MessageSendAction) ListByCond(args *action.ListByCond, reply *[]message.M
 func (*MessageSendAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
 	o := orm.NewOrm()
 	o.Using("message")
-	cond := orm.NewCondition()
 
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
+	cond := utils.ConvertCond(args.CondList)
+
+	if args.PageSize == 0 {
+		args.PageSize = 20
 	}
+	if args.CurrentSize == 0 {
+		args.CurrentSize = 1
+	}
+
+	if args.OrderBy == nil || len(args.OrderBy) == 0 {
+		args.OrderBy = []string{"id"}
+	}
+
 	var err error
-	reply.CurrentSize, err = o.QueryTable("message_send").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&reply.List, args.Cols...)
+	var replyList []message.MessageSend
+	reply.CurrentSize, err = o.QueryTable("message_send").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&replyList, args.Cols...)
 	reply.Total, err = o.QueryTable("message_send").SetCond(cond).Count()
+	reply.Json, _ = json.Marshal(replyList)
 	return err
 }
