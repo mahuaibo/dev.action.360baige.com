@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"dev.model.360baige.com/models/user"
 	"dev.model.360baige.com/action"
+	"dev.action.360baige.com/utils"
 )
 
 type UserAction struct {
@@ -42,23 +43,25 @@ func (*UserAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) er
 	o := orm.NewOrm()
 	o.Using("user")
 
-	var values orm.Params
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
+	//cond := orm.NewCondition()
+	//for _, item := range args.CondList {
+	//	if (item.Type == "And") {
+	//		cond = cond.And(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	} else if (item.Type == "AndNot") {
+	//		cond = cond.AndNot(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	} else if (item.Type == "Or") {
+	//		cond = cond.Or(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	} else if (item.Type == "OrNot") {
+	//		cond = cond.OrNot(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	}
+	//}
+	cond := utils.ConvertCond(args.CondList)
 
-	for _, item := range args.UpdateList {
-		values[item.Key] = item.Val
-	}
+	//values := orm.Params{}
+	//for _, item := range args.UpdateList {
+	//	values[item.Key] = utils.ConvertUint8ToString(item.Val)
+	//}
+	values := utils.ConvertValues(args.UpdateList)
 
 	num, err := o.QueryTable("user").SetCond(cond).Update(values)
 	reply.Value = num
@@ -70,13 +73,10 @@ func (*UserAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) er
 	o := orm.NewOrm()
 	o.Using("user")
 
-	var values orm.Params
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
 
-	values["status"] = -1
-
-	num, err := o.QueryTable("user").SetCond(cond).Update(values)
+	num, err := o.QueryTable("user").SetCond(cond).Update(orm.Params{"status": -1})
 	reply.Value = num
 	return err
 }
@@ -86,13 +86,14 @@ func (*UserAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) er
 	o := orm.NewOrm()
 	o.Using("user")
 
-	var values orm.Params
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
 
-	for _, item := range args.UpdateList {
-		values[item.Key] = item.Val
-	}
+	//values := orm.Params{}
+	//for _, item := range args.UpdateList {
+	//	values[item.Key] = utils.ConvertUint8ToString(item.Val)
+	//}
+	values := utils.ConvertValues(args.UpdateList)
 
 	num, err := o.QueryTable("user").SetCond(cond).Update(values)
 	reply.Value = num
@@ -104,19 +105,19 @@ func (*UserAction) FindByCond(args *action.FindByCond, reply *user.User) error {
 	o := orm.NewOrm()
 	o.Using("user")
 
-	cond := orm.NewCondition()
-
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
+	//cond := orm.NewCondition()
+	//for _, item := range args.CondList {
+	//	if (item.Type == "And") {
+	//		cond = cond.And(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	} else if (item.Type == "AndNot") {
+	//		cond = cond.AndNot(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	} else if (item.Type == "Or") {
+	//		cond = cond.Or(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	} else if (item.Type == "OrNot") {
+	//		cond = cond.OrNot(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	}
+	//}
+	cond := utils.ConvertCond(args.CondList)
 
 	err := o.QueryTable("user").SetCond(cond).One(&reply, args.Fileds...)
 	return err
@@ -127,23 +128,21 @@ func (*UserAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) er
 	o := orm.NewOrm()
 	o.Using("user")
 
-	var values orm.Params
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
+	//cond := orm.NewCondition()
+	//for _, item := range args.CondList {
+	//	if (item.Type == "And") {
+	//		cond = cond.And(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	} else if (item.Type == "AndNot") {
+	//		cond = cond.AndNot(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	} else if (item.Type == "Or") {
+	//		cond = cond.Or(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	} else if (item.Type == "OrNot") {
+	//		cond = cond.OrNot(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	}
+	//}
+	cond := utils.ConvertCond(args.CondList)
 
-	values["status"] = -1
-
-	num, err := o.QueryTable("user").SetCond(cond).Update(values)
+	num, err := o.QueryTable("user").SetCond(cond).Update(orm.Params{"status": -1})
 	reply.Value = num
 	return err
 }
@@ -152,18 +151,22 @@ func (*UserAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) er
 func (*UserAction) ListByCond(args *action.ListByCond, reply *[]user.User) error {
 	o := orm.NewOrm()
 	o.Using("user")
-	cond := orm.NewCondition()
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
+
+	//cond := orm.NewCondition()
+	//for _, item := range args.CondList {
+	//	if (item.Type == "And") {
+	//		cond = cond.And(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	} else if (item.Type == "AndNot") {
+	//		cond = cond.AndNot(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	} else if (item.Type == "Or") {
+	//		cond = cond.Or(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	} else if (item.Type == "OrNot") {
+	//		cond = cond.OrNot(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	}
+	//}
+
+	cond := utils.ConvertCond(args.CondList)
+
 	if args.PageSize == 0 {
 		args.PageSize = -1
 	}
@@ -175,19 +178,21 @@ func (*UserAction) ListByCond(args *action.ListByCond, reply *[]user.User) error
 func (*UserAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
 	o := orm.NewOrm()
 	o.Using("user")
-	cond := orm.NewCondition()
 
-	for _, item := range args.CondList {
-		if (item.Type == "And") {
-			cond = cond.And(item.Key, item.Val)
-		} else if (item.Type == "AndNot") {
-			cond = cond.AndNot(item.Key, item.Val)
-		} else if (item.Type == "Or") {
-			cond = cond.Or(item.Key, item.Val)
-		} else if (item.Type == "OrNot") {
-			cond = cond.OrNot(item.Key, item.Val)
-		}
-	}
+	//cond := orm.NewCondition()
+	//for _, item := range args.CondList {
+	//	if (item.Type == "And") {
+	//		cond = cond.And(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	} else if (item.Type == "AndNot") {
+	//		cond = cond.AndNot(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	} else if (item.Type == "Or") {
+	//		cond = cond.Or(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	} else if (item.Type == "OrNot") {
+	//		cond = cond.OrNot(item.Key, utils.ConvertUint8ToString(item.Val))
+	//	}
+	//}
+	cond := utils.ConvertCond(args.CondList)
+
 	var err error
 	reply.CurrentSize, err = o.QueryTable("user").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&reply.List, args.Cols...)
 	reply.Total, err = o.QueryTable("user").SetCond(cond).Count()
