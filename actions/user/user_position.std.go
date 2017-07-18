@@ -4,24 +4,27 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/astaxie/beego/orm"
 	"dev.model.360baige.com/models/user"
+	"dev.model.360baige.com/action"
 )
 
 type UserPositionAction struct {
 }
 
 // 1
-func (*UserPositionAction) Add(args *user.UserPosition, reply int64) error {
+func (*UserPositionAction) Add(args *user.UserPosition, reply *user.UserPosition) error {
 	o := orm.NewOrm()
 	o.Using("user")
-	reply, err := o.Insert(args)
+	id, err := o.Insert(args)
+	reply.Id = id
 	return err
 }
 
 // 2
-func (*UserPositionAction) AddMultiple(args []*user.UserPosition, reply int64) error {
+func (*UserPositionAction) AddMultiple(args []*user.UserPosition, reply *action.Num) error {
 	o := orm.NewOrm()
 	o.Using("user") //查询数据库
-	reply, err := o.InsertMulti(len(args), args)
+	num, err := o.InsertMulti(len(args), args)
+	reply.Value = num
 	return err
 }
 
@@ -35,7 +38,7 @@ func (*UserPositionAction) FindById(args *user.UserPosition, reply *user.UserPos
 }
 
 // 4
-func (*UserPositionAction) UpdateByCond(args *UpdateByCond, reply int64) error {
+func (*UserPositionAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) error {
 	o := orm.NewOrm()
 	o.Using("user")
 
@@ -57,27 +60,29 @@ func (*UserPositionAction) UpdateByCond(args *UpdateByCond, reply int64) error {
 		values[item.Key] = item.Val
 	}
 
-	reply, err := o.QueryTable("user_position").SetCond(cond).Update(values)
+	num, err := o.QueryTable("user_position").SetCond(cond).Update(values)
+	reply.Value = num
 	return err
 }
 
-// 5
-func (*UserPositionAction) DeleteById(args []int64, reply int64) error {
+// 5 TODO
+func (*UserPositionAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) error {
 	o := orm.NewOrm()
 	o.Using("user")
 
 	var values orm.Params
 	cond := orm.NewCondition()
-	cond = cond.And("id__in", args)
+	cond = cond.And("id__in", args.Value)
 
 	values["status"] = -1
 
-	reply, err := o.QueryTable("user_position").SetCond(cond).Update(values)
+	num, err := o.QueryTable("user_position").SetCond(cond).Update(values)
+	reply.Value = num
 	return err
 }
 
 // 6
-func (*UserPositionAction) UpdateById(args *UpdateByIdCond, reply int64) error {
+func (*UserPositionAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) error {
 	o := orm.NewOrm()
 	o.Using("user")
 
@@ -89,12 +94,13 @@ func (*UserPositionAction) UpdateById(args *UpdateByIdCond, reply int64) error {
 		values[item.Key] = item.Val
 	}
 
-	reply, err := o.QueryTable("user_position").SetCond(cond).Update(values)
+	num, err := o.QueryTable("user_position").SetCond(cond).Update(values)
+	reply.Value = num
 	return err
 }
 
 // 7
-func (*UserPositionAction) FindByCond(args *FindByCond, reply *user.UserPosition) error {
+func (*UserPositionAction) FindByCond(args *action.FindByCond, reply *user.User) error {
 	o := orm.NewOrm()
 	o.Using("user")
 
@@ -117,7 +123,7 @@ func (*UserPositionAction) FindByCond(args *FindByCond, reply *user.UserPosition
 }
 
 // 8
-func (*UserPositionAction) DeleteByCond(args *DeleteByCond, reply int64) error {
+func (*UserPositionAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) error {
 	o := orm.NewOrm()
 	o.Using("user")
 
@@ -137,12 +143,13 @@ func (*UserPositionAction) DeleteByCond(args *DeleteByCond, reply int64) error {
 
 	values["status"] = -1
 
-	reply, err := o.QueryTable("user_position").SetCond(cond).Update(values)
+	num, err := o.QueryTable("user_position").SetCond(cond).Update(values)
+	reply.Value = num
 	return err
 }
 
 // 9
-func (*UserPositionAction) ListByCond(args *ListByCond, reply *[]user.UserPosition) error {
+func (*UserPositionAction) ListByCond(args *action.ListByCond, reply *[]user.UserPosition) error {
 	o := orm.NewOrm()
 	o.Using("user")
 	cond := orm.NewCondition()
@@ -157,7 +164,6 @@ func (*UserPositionAction) ListByCond(args *ListByCond, reply *[]user.UserPositi
 			cond = cond.OrNot(item.Key, item.Val)
 		}
 	}
-
 	if args.PageSize == 0 {
 		args.PageSize = -1
 	}
@@ -166,7 +172,7 @@ func (*UserPositionAction) ListByCond(args *ListByCond, reply *[]user.UserPositi
 }
 
 // 10
-func (*UserPositionAction) PageByCond(args *PageByCond, reply *PageByCond) error {
+func (*UserPositionAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
 	o := orm.NewOrm()
 	o.Using("user")
 	cond := orm.NewCondition()
@@ -182,10 +188,8 @@ func (*UserPositionAction) PageByCond(args *PageByCond, reply *PageByCond) error
 			cond = cond.OrNot(item.Key, item.Val)
 		}
 	}
-	num, err := o.QueryTable("user_position").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&reply.List, args.Cols...)
-	reply.CurrentSize = num
-	qs := o.QueryTable("user_position").SetCond(cond)
-	total, err := qs.Count()
-	reply.Total = total
+	var err error
+	reply.CurrentSize, err = o.QueryTable("user_position").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&reply.List, args.Cols...)
+	reply.Total, err = o.QueryTable("user_position").SetCond(cond).Count()
 	return err
 }
