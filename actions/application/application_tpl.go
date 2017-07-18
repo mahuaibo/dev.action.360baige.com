@@ -3,72 +3,12 @@ package application
 import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/astaxie/beego/orm"
-	"dev.model.360baige.com/models/application"
 	"dev.model.360baige.com/models/paginator"
 	"dev.model.360baige.com/models/batch"
 	"strings"
 	"encoding/json"
 	"time"
 )
-
-type ApplicationTplAction struct {
-}
-
-// 新增
-func (*ApplicationTplAction) Add(args *application.ApplicationTpl, reply *application.ApplicationTpl) error {
-	o := orm.NewOrm()
-	o.Using("application")
-	id, err := o.Insert(args)
-	if err == nil {
-		reply.Id = id
-		reply.CreateTime = args.CreateTime
-		reply.UpdateTime = args.UpdateTime
-		reply.CompanyId = args.CompanyId
-		reply.UserId = args.UserId
-		reply.Name = args.Name
-		reply.Image = args.Image
-		reply.Site = args.Site
-		reply.Type = args.Type
-		reply.Desc = args.Desc
-		reply.Status = args.Status
-		reply.Price = args.Price
-		reply.PayType = args.PayType
-		reply.PayCycle = args.PayCycle
-		
-	}
-	return err
-}
-
-// 查询 by Id
-func (*ApplicationTplAction) FindById(args *application.ApplicationTpl, reply *application.ApplicationTpl) error {
-	o := orm.NewOrm()
-	o.Using("application")
-	reply.Id = args.Id
-	err := o.Read(reply)
-	return err
-}
-
-// 更新 by Id
-func (*ApplicationTplAction) UpdateById(args *application.ApplicationTpl, reply *application.ApplicationTpl) error {
-	o := orm.NewOrm()
-	o.Using("application")
-	num, err := o.Update(args)
-	if err == nil {
-		if num > 0 {
-			reply.Id = args.Id
-		}
-	}
-	return err
-}
-
-// 1. AddMultiple 增加多个
-func (*ApplicationTplAction) AddMultiple(args []*application.ApplicationTpl, reply *batch.BackNumm) error {
-	o := orm.NewOrm()
-	o.Using("application") //查询数据库
-	num, err := o.InsertMulti(100, args)
-	reply.Num = num
-	return err
-}
 
 // 2.UpdateByIds 修改多个,默认更改状态为-1，只适合id,更改status,update_time
 func (*ApplicationTplAction) UpdateByIds(args *batch.BatchModify, reply *batch.BackNumm) error {

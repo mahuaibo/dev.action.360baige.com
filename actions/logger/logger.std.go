@@ -1,46 +1,51 @@
-package user
+package logger
 
 import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/astaxie/beego/orm"
-	"dev.model.360baige.com/models/user"
+	"dev.model.360baige.com/models/logger"
+	"dev.model.360baige.com/models/paginator"
+	"dev.model.360baige.com/models/batch"
+	"strings"
+	"encoding/json"
+	"time"
 	"dev.model.360baige.com/action"
 )
 
-type UserAction struct {
+type LoggerAction struct {
 }
 
 // 1
-func (*UserAction) Add(args *user.User, reply *user.User) error {
+func (*LoggerAction) Add(args *logger.Logger, reply *logger.Logger) error {
 	o := orm.NewOrm()
-	o.Using("user")
+	o.Using("logger")
 	id, err := o.Insert(args)
 	reply.Id = id
 	return err
 }
 
 // 2
-func (*UserAction) AddMultiple(args []*user.User, reply *action.Num) error {
+func (*LoggerAction) AddMultiple(args []*logger.Logger, reply *action.Num) error {
 	o := orm.NewOrm()
-	o.Using("user") //查询数据库
+	o.Using("logger") //查询数据库
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
 }
 
 // 3
-func (*UserAction) FindById(args *user.User, reply *user.User) error {
+func (*LoggerAction) FindById(args *logger.Logger, reply *logger.Logger) error {
 	o := orm.NewOrm()
-	o.Using("user")
+	o.Using("logger")
 	reply.Id = args.Id
 	err := o.Read(reply)
 	return err
 }
 
 // 4
-func (*UserAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) error {
+func (*LoggerAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) error {
 	o := orm.NewOrm()
-	o.Using("user")
+	o.Using("logger")
 
 	var values orm.Params
 	cond := orm.NewCondition()
@@ -60,15 +65,15 @@ func (*UserAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) er
 		values[item.Key] = item.Val
 	}
 
-	num, err := o.QueryTable("user").SetCond(cond).Update(values)
+	num, err := o.QueryTable("logger").SetCond(cond).Update(values)
 	reply.Value = num
 	return err
 }
 
 // 5
-func (*UserAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) error {
+func (*LoggerAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) error {
 	o := orm.NewOrm()
-	o.Using("user")
+	o.Using("logger")
 
 	var values orm.Params
 	cond := orm.NewCondition()
@@ -76,15 +81,15 @@ func (*UserAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) er
 
 	values["status"] = -1
 
-	num, err := o.QueryTable("user").SetCond(cond).Update(values)
+	num, err := o.QueryTable("logger").SetCond(cond).Update(values)
 	reply.Value = num
 	return err
 }
 
 // 6
-func (*UserAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) error {
+func (*LoggerAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) error {
 	o := orm.NewOrm()
-	o.Using("user")
+	o.Using("logger")
 
 	var values orm.Params
 	cond := orm.NewCondition()
@@ -94,15 +99,15 @@ func (*UserAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) er
 		values[item.Key] = item.Val
 	}
 
-	num, err := o.QueryTable("user").SetCond(cond).Update(values)
+	num, err := o.QueryTable("logger").SetCond(cond).Update(values)
 	reply.Value = num
 	return err
 }
 
 // 7
-func (*UserAction) FindByCond(args *action.FindByCond, reply *user.User) error {
+func (*LoggerAction) FindByCond(args *action.FindByCond, reply *logger.Logger) error {
 	o := orm.NewOrm()
-	o.Using("user")
+	o.Using("logger")
 
 	cond := orm.NewCondition()
 
@@ -118,14 +123,14 @@ func (*UserAction) FindByCond(args *action.FindByCond, reply *user.User) error {
 		}
 	}
 
-	err := o.QueryTable("user").SetCond(cond).One(&reply, args.Fileds...)
+	err := o.QueryTable("logger").SetCond(cond).One(&reply, args.Fileds...)
 	return err
 }
 
 // 8
-func (*UserAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) error {
+func (*LoggerAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) error {
 	o := orm.NewOrm()
-	o.Using("user")
+	o.Using("logger")
 
 	var values orm.Params
 	cond := orm.NewCondition()
@@ -143,15 +148,15 @@ func (*UserAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) er
 
 	values["status"] = -1
 
-	num, err := o.QueryTable("user").SetCond(cond).Update(values)
+	num, err := o.QueryTable("logger").SetCond(cond).Update(values)
 	reply.Value = num
 	return err
 }
 
 // 9
-func (*UserAction) ListByCond(args *action.ListByCond, reply *[]user.User) error {
+func (*LoggerAction) ListByCond(args *action.ListByCond, reply *[]logger.Logger) error {
 	o := orm.NewOrm()
-	o.Using("user")
+	o.Using("logger")
 	cond := orm.NewCondition()
 	for _, item := range args.CondList {
 		if (item.Type == "And") {
@@ -167,14 +172,14 @@ func (*UserAction) ListByCond(args *action.ListByCond, reply *[]user.User) error
 	if args.PageSize == 0 {
 		args.PageSize = -1
 	}
-	_, err := o.QueryTable("user").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply, args.Cols...)
+	_, err := o.QueryTable("logger").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize).All(&reply, args.Cols...)
 	return err
 }
 
 // 10
-func (*UserAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
+func (*LoggerAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
 	o := orm.NewOrm()
-	o.Using("user")
+	o.Using("logger")
 	cond := orm.NewCondition()
 
 	for _, item := range args.CondList {
@@ -189,7 +194,7 @@ func (*UserAction) PageByCond(args *action.PageByCond, reply *action.PageByCond)
 		}
 	}
 	var err error
-	reply.CurrentSize, err = o.QueryTable("user").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&reply.List, args.Cols...)
-	reply.Total, err = o.QueryTable("user").SetCond(cond).Count()
+	reply.CurrentSize, err = o.QueryTable("logger").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&reply.List, args.Cols...)
+	reply.Total, err = o.QueryTable("logger").SetCond(cond).Count()
 	return err
 }

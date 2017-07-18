@@ -3,67 +3,12 @@ package logger
 import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/astaxie/beego/orm"
-	"dev.model.360baige.com/models/logger"
 	"dev.model.360baige.com/models/paginator"
 	"dev.model.360baige.com/models/batch"
 	"strings"
 	"encoding/json"
 	"time"
 )
-
-type LoggerAction struct {
-}
-
-// 新增
-func (*LoggerAction) Add(args *logger.Logger, reply *logger.Logger) error {
-	o := orm.NewOrm()
-	o.Using("logger")
-	id, err := o.Insert(args)
-	if err == nil {
-		reply.Id = id
-		reply.CreateTime = args.CreateTime
-		reply.CompanyId = args.CompanyId
-		reply.UserId = args.UserId
-		reply.UserPositionId = args.UserPositionId
-		reply.UserPositionType = args.UserPositionType
-		reply.Content = args.Content
-		reply.Remark = args.Remark
-		reply.Type = args.Type
-		
-	}
-	return err
-}
-
-// 查询 by Id
-func (*LoggerAction) FindById(args *logger.Logger, reply *logger.Logger) error {
-	o := orm.NewOrm()
-	o.Using("logger")
-	reply.Id = args.Id
-	err := o.Read(reply)
-	return err
-}
-
-// 更新 by Id
-func (*LoggerAction) UpdateById(args *logger.Logger, reply *logger.Logger) error {
-	o := orm.NewOrm()
-	o.Using("logger")
-	num, err := o.Update(args)
-	if err == nil {
-		if num > 0 {
-			reply.Id = args.Id
-		}
-	}
-	return err
-}
-
-// 1. AddMultiple 增加多个
-func (*LoggerAction) AddMultiple(args []*logger.Logger, reply *batch.BackNumm) error {
-	o := orm.NewOrm()
-	o.Using("logger") //查询数据库
-	num, err := o.InsertMulti(100, args)
-	reply.Num = num
-	return err
-}
 
 // 2.UpdateByIds 修改多个,默认更改状态为-1，只适合id,更改status,update_time
 func (*LoggerAction) UpdateByIds(args *batch.BatchModify, reply *batch.BackNumm) error {

@@ -12,37 +12,6 @@ import (
 	"strings"
 )
 
-type AccountAction struct {
-}
-
-// 新增
-func (*AccountAction) Add(args *account.Account, reply *account.Account) error {
-	o := orm.NewOrm()
-	o.Using("account")
-	id, err := o.Insert(args)
-	if err == nil {
-		reply.Id = id
-		reply.CreateTime = args.CreateTime
-		reply.UpdateTime = args.UpdateTime
-		reply.UserId = args.UserId
-		reply.Type = args.Type
-		reply.Unit = args.Unit
-		reply.Balance = args.Balance
-		reply.Status = args.Status
-
-	}
-	return err
-}
-
-// 查询 by Id
-func (*AccountAction) FindById(args *account.Account, reply *account.Account) error {
-	o := orm.NewOrm()
-	o.Using("account")
-	reply.Id = args.Id
-	err := o.Read(reply)
-	return err
-}
-
 //查询 by position
 func (*AccountAction) FindByUserPos(args *account.Account, reply *account.Account) error {
 	o := orm.NewOrm()
@@ -52,28 +21,6 @@ func (*AccountAction) FindByUserPos(args *account.Account, reply *account.Accoun
 	reply.UserPositionId = args.UserPositionId
 	reply.UserPositionType = args.UserPositionType
 	err := o.Read(reply, "company_id", "user_id", "user_position_id", "user_position_type")
-	return err
-}
-
-// 更新 by Id
-func (*AccountAction) UpdateById(args *account.Account, reply *account.Account) error {
-	o := orm.NewOrm()
-	o.Using("account")
-	num, err := o.Update(args)
-	if err == nil {
-		if num > 0 {
-			reply.Id = args.Id
-		}
-	}
-	return err
-}
-
-// 1. AddMultiple 增加多个
-func (*AccountAction) AddMultiple(args []*account.Account, reply *batch.BackNumm) error {
-	o := orm.NewOrm()
-	o.Using("account") //查询数据库
-	num, err := o.InsertMulti(100, args)
-	reply.Num = num
 	return err
 }
 
