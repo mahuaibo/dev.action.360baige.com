@@ -143,3 +143,15 @@ func (*MessageTotalAction) PageByCond(args *action.PageByCond, reply *action.Pag
 	reply.Json, _ = json.Marshal(replyList)
 	return err
 }
+
+// 11
+func (*MessageTotalAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
+	o := orm.NewOrm()
+	o.Using("message")
+
+	cond := utils.ConvertCond(args.CondList)
+
+	num, err := o.QueryTable("message_total").SetCond(cond).Count()
+	reply.Value = num
+	return err
+}

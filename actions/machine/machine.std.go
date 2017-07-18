@@ -143,3 +143,15 @@ func (*MachineAction) PageByCond(args *action.PageByCond, reply *action.PageByCo
 	reply.Json, _ = json.Marshal(replyList)
 	return err
 }
+
+// 11
+func (*MachineAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
+	o := orm.NewOrm()
+	o.Using("machine")
+
+	cond := utils.ConvertCond(args.CondList)
+
+	num, err := o.QueryTable("machine").SetCond(cond).Count()
+	reply.Value = num
+	return err
+}

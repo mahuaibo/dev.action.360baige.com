@@ -143,3 +143,15 @@ func (*MessageTempAction) PageByCond(args *action.PageByCond, reply *action.Page
 	reply.Json, _ = json.Marshal(replyList)
 	return err
 }
+
+// 11
+func (*MessageTempAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
+	o := orm.NewOrm()
+	o.Using("message")
+
+	cond := utils.ConvertCond(args.CondList)
+
+	num, err := o.QueryTable("message_temp").SetCond(cond).Count()
+	reply.Value = num
+	return err
+}

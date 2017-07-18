@@ -143,3 +143,15 @@ func (*AttendanceShiftItemAction) PageByCond(args *action.PageByCond, reply *act
 	reply.Json, _ = json.Marshal(replyList)
 	return err
 }
+
+// 11
+func (*AttendanceShiftItemAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
+	o := orm.NewOrm()
+	o.Using("attendance")
+
+	cond := utils.ConvertCond(args.CondList)
+
+	num, err := o.QueryTable("attendance_shift_item").SetCond(cond).Count()
+	reply.Value = num
+	return err
+}

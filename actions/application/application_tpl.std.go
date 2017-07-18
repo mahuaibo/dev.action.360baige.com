@@ -143,3 +143,15 @@ func (*ApplicationTplAction) PageByCond(args *action.PageByCond, reply *action.P
 	reply.Json, _ = json.Marshal(replyList)
 	return err
 }
+
+// 11
+func (*ApplicationTplAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
+	o := orm.NewOrm()
+	o.Using("application")
+
+	cond := utils.ConvertCond(args.CondList)
+
+	num, err := o.QueryTable("application_tpl").SetCond(cond).Count()
+	reply.Value = num
+	return err
+}

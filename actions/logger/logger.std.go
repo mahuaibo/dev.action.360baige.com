@@ -143,3 +143,15 @@ func (*LoggerAction) PageByCond(args *action.PageByCond, reply *action.PageByCon
 	reply.Json, _ = json.Marshal(replyList)
 	return err
 }
+
+// 11
+func (*LoggerAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
+	o := orm.NewOrm()
+	o.Using("logger")
+
+	cond := utils.ConvertCond(args.CondList)
+
+	num, err := o.QueryTable("logger").SetCond(cond).Count()
+	reply.Value = num
+	return err
+}

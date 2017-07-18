@@ -143,3 +143,15 @@ func (*UserPositionAction) PageByCond(args *action.PageByCond, reply *action.Pag
 	reply.Json, _ = json.Marshal(replyList)
 	return err
 }
+
+// 11
+func (*UserPositionAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
+	o := orm.NewOrm()
+	o.Using("user")
+
+	cond := utils.ConvertCond(args.CondList)
+
+	num, err := o.QueryTable("user_position").SetCond(cond).Count()
+	reply.Value = num
+	return err
+}

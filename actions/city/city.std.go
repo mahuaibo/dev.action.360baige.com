@@ -143,3 +143,15 @@ func (*CityAction) PageByCond(args *action.PageByCond, reply *action.PageByCond)
 	reply.Json, _ = json.Marshal(replyList)
 	return err
 }
+
+// 11
+func (*CityAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
+	o := orm.NewOrm()
+	o.Using("city")
+
+	cond := utils.ConvertCond(args.CondList)
+
+	num, err := o.QueryTable("city").SetCond(cond).Count()
+	reply.Value = num
+	return err
+}

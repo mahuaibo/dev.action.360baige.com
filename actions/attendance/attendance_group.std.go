@@ -143,3 +143,15 @@ func (*AttendanceGroupAction) PageByCond(args *action.PageByCond, reply *action.
 	reply.Json, _ = json.Marshal(replyList)
 	return err
 }
+
+// 11
+func (*AttendanceGroupAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
+	o := orm.NewOrm()
+	o.Using("attendance")
+
+	cond := utils.ConvertCond(args.CondList)
+
+	num, err := o.QueryTable("attendance_group").SetCond(cond).Count()
+	reply.Value = num
+	return err
+}

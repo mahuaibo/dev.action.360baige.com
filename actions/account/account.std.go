@@ -143,3 +143,15 @@ func (*AccountAction) PageByCond(args *action.PageByCond, reply *action.PageByCo
 	reply.Json, _ = json.Marshal(replyList)
 	return err
 }
+
+// 11
+func (*AccountAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
+	o := orm.NewOrm()
+	o.Using("account")
+
+	cond := utils.ConvertCond(args.CondList)
+
+	num, err := o.QueryTable("account").SetCond(cond).Count()
+	reply.Value = num
+	return err
+}

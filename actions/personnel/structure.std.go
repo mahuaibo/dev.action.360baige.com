@@ -143,3 +143,15 @@ func (*StructureAction) PageByCond(args *action.PageByCond, reply *action.PageBy
 	reply.Json, _ = json.Marshal(replyList)
 	return err
 }
+
+// 11
+func (*StructureAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
+	o := orm.NewOrm()
+	o.Using("personnel")
+
+	cond := utils.ConvertCond(args.CondList)
+
+	num, err := o.QueryTable("structure").SetCond(cond).Count()
+	reply.Value = num
+	return err
+}

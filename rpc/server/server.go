@@ -12,7 +12,7 @@ import (
 	"dev.action.360baige.com/actions/city"
 	"dev.action.360baige.com/actions/account"
 	"dev.action.360baige.com/actions/order"
-	//"dev.action.360baige.com/actions/application"
+	"dev.action.360baige.com/actions/application"
 	//"dev.action.360baige.com/actions/attendance"
 	//"dev.action.360baige.com/actions/card"
 	//"dev.action.360baige.com/actions/machine"
@@ -43,8 +43,9 @@ func init() {
 
 		"Order": &order.OrderAction{},
 
-		//"Application":    &application.ApplicationAction{},
-		//"ApplicationTpl": &application.ApplicationTplAction{},
+		"Application":    &application.ApplicationAction{},
+		"ApplicationTpl": &application.ApplicationTplAction{},
+
 		////
 		//"AttendanceGroup":       &attendance.AttendanceGroupAction{},
 		//"AttendanceRecord":      &attendance.AttendanceRecordAction{},

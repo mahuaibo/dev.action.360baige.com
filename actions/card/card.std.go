@@ -143,3 +143,15 @@ func (*CardAction) PageByCond(args *action.PageByCond, reply *action.PageByCond)
 	reply.Json, _ = json.Marshal(replyList)
 	return err
 }
+
+// 11
+func (*CardAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
+	o := orm.NewOrm()
+	o.Using("card")
+
+	cond := utils.ConvertCond(args.CondList)
+
+	num, err := o.QueryTable("card").SetCond(cond).Count()
+	reply.Value = num
+	return err
+}
