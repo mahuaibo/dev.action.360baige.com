@@ -14,7 +14,7 @@ type CityAction struct {
 }
 
 // 1
-func (*CityAction) Add(args *city.Account, reply *city.City) error {
+func (*CityAction) Add(args *city.City, reply *city.City) error {
 	o := orm.NewOrm()
 	o.Using("city")
 	id, err := o.Insert(args)

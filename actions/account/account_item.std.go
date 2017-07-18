@@ -14,7 +14,7 @@ type AccountItemAction struct {
 }
 
 // 1
-func (*AccountItemAction) Add(args *account.Account, reply *account.AccountItem) error {
+func (*AccountItemAction) Add(args *account.AccountItem, reply *account.AccountItem) error {
 	o := orm.NewOrm()
 	o.Using("account")
 	id, err := o.Insert(args)

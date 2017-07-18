@@ -14,7 +14,7 @@ type AttendanceShiftAction struct {
 }
 
 // 1
-func (*AttendanceShiftAction) Add(args *attendance.Account, reply *attendance.AttendanceShift) error {
+func (*AttendanceShiftAction) Add(args *attendance.AttendanceShift, reply *attendance.AttendanceShift) error {
 	o := orm.NewOrm()
 	o.Using("attendance")
 	id, err := o.Insert(args)

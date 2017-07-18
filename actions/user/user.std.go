@@ -14,7 +14,7 @@ type UserAction struct {
 }
 
 // 1
-func (*UserAction) Add(args *user.Account, reply *user.User) error {
+func (*UserAction) Add(args *user.User, reply *user.User) error {
 	o := orm.NewOrm()
 	o.Using("user")
 	id, err := o.Insert(args)

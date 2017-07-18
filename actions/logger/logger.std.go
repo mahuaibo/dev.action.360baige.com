@@ -14,7 +14,7 @@ type LoggerAction struct {
 }
 
 // 1
-func (*LoggerAction) Add(args *logger.Account, reply *logger.Logger) error {
+func (*LoggerAction) Add(args *logger.Logger, reply *logger.Logger) error {
 	o := orm.NewOrm()
 	o.Using("logger")
 	id, err := o.Insert(args)

@@ -14,7 +14,7 @@ type ApplicationTplAction struct {
 }
 
 // 1
-func (*ApplicationTplAction) Add(args *application.Account, reply *application.ApplicationTpl) error {
+func (*ApplicationTplAction) Add(args *application.ApplicationTpl, reply *application.ApplicationTpl) error {
 	o := orm.NewOrm()
 	o.Using("application")
 	id, err := o.Insert(args)

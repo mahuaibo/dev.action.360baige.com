@@ -14,7 +14,7 @@ type MachineAction struct {
 }
 
 // 1
-func (*MachineAction) Add(args *machine.Account, reply *machine.Machine) error {
+func (*MachineAction) Add(args *machine.Machine, reply *machine.Machine) error {
 	o := orm.NewOrm()
 	o.Using("machine")
 	id, err := o.Insert(args)

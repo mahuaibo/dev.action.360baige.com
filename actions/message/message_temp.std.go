@@ -14,7 +14,7 @@ type MessageTempAction struct {
 }
 
 // 1
-func (*MessageTempAction) Add(args *message.Account, reply *message.MessageTemp) error {
+func (*MessageTempAction) Add(args *message.MessageTemp, reply *message.MessageTemp) error {
 	o := orm.NewOrm()
 	o.Using("message")
 	id, err := o.Insert(args)

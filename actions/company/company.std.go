@@ -14,7 +14,7 @@ type CompanyAction struct {
 }
 
 // 1
-func (*CompanyAction) Add(args *company.Account, reply *company.Company) error {
+func (*CompanyAction) Add(args *company.Company, reply *company.Company) error {
 	o := orm.NewOrm()
 	o.Using("company")
 	id, err := o.Insert(args)

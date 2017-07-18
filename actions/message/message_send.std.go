@@ -14,7 +14,7 @@ type MessageSendAction struct {
 }
 
 // 1
-func (*MessageSendAction) Add(args *message.Account, reply *message.MessageSend) error {
+func (*MessageSendAction) Add(args *message.MessageSend, reply *message.MessageSend) error {
 	o := orm.NewOrm()
 	o.Using("message")
 	id, err := o.Insert(args)

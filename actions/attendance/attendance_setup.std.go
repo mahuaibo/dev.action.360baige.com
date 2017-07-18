@@ -14,7 +14,7 @@ type AttendanceSetupAction struct {
 }
 
 // 1
-func (*AttendanceSetupAction) Add(args *attendance.Account, reply *attendance.AttendanceSetup) error {
+func (*AttendanceSetupAction) Add(args *attendance.AttendanceSetup, reply *attendance.AttendanceSetup) error {
 	o := orm.NewOrm()
 	o.Using("attendance")
 	id, err := o.Insert(args)

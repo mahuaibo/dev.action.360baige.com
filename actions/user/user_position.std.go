@@ -14,7 +14,7 @@ type UserPositionAction struct {
 }
 
 // 1
-func (*UserPositionAction) Add(args *user.Account, reply *user.UserPosition) error {
+func (*UserPositionAction) Add(args *user.UserPosition, reply *user.UserPosition) error {
 	o := orm.NewOrm()
 	o.Using("user")
 	id, err := o.Insert(args)

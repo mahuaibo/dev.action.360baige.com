@@ -14,7 +14,7 @@ type TransactionAction struct {
 }
 
 // 1
-func (*TransactionAction) Add(args *account.Account, reply *account.Transaction) error {
+func (*TransactionAction) Add(args *account.Transaction, reply *account.Transaction) error {
 	o := orm.NewOrm()
 	o.Using("account")
 	id, err := o.Insert(args)

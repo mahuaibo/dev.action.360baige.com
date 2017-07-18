@@ -14,7 +14,7 @@ type MessageTotalAction struct {
 }
 
 // 1
-func (*MessageTotalAction) Add(args *message.Account, reply *message.MessageTotal) error {
+func (*MessageTotalAction) Add(args *message.MessageTotal, reply *message.MessageTotal) error {
 	o := orm.NewOrm()
 	o.Using("message")
 	id, err := o.Insert(args)

@@ -14,7 +14,7 @@ type StructureAction struct {
 }
 
 // 1
-func (*StructureAction) Add(args *personnel.Account, reply *personnel.Structure) error {
+func (*StructureAction) Add(args *personnel.Structure, reply *personnel.Structure) error {
 	o := orm.NewOrm()
 	o.Using("personnel")
 	id, err := o.Insert(args)

@@ -14,7 +14,7 @@ type OrderAction struct {
 }
 
 // 1
-func (*OrderAction) Add(args *order.Account, reply *order.Order) error {
+func (*OrderAction) Add(args *order.Order, reply *order.Order) error {
 	o := orm.NewOrm()
 	o.Using("order")
 	id, err := o.Insert(args)

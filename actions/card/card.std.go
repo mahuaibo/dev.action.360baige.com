@@ -14,7 +14,7 @@ type CardAction struct {
 }
 
 // 1
-func (*CardAction) Add(args *card.Account, reply *card.Card) error {
+func (*CardAction) Add(args *card.Card, reply *card.Card) error {
 	o := orm.NewOrm()
 	o.Using("card")
 	id, err := o.Insert(args)
