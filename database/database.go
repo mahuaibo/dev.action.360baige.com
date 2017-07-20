@@ -9,6 +9,7 @@ import (
 	"dev.model.360baige.com/models/company"
 	"dev.model.360baige.com/models/logger"
 	"dev.model.360baige.com/models/machine"
+	"dev.model.360baige.com/models/message"
 	"dev.model.360baige.com/models/order"
 	"dev.model.360baige.com/models/personnel"
 	"dev.model.360baige.com/models/user"
@@ -41,6 +42,9 @@ func init() {
 	orm.RegisterDataBase("machine", "mysql", "demo2015:baige.2016@tcp(182.92.163.192:3306)/db_machine?charset=utf8", 30)
 	orm.RegisterModel(&machine.Machine{})
 
+	orm.RegisterDataBase("message", "mysql", "demo2015:baige.2016@tcp(182.92.163.192:3306)/db_message?charset=utf8", 30)
+	orm.RegisterModel(&message.MessageTemp{}, &message.MessageTotal{}, &message.MessageSend{})
+
 	orm.RegisterDataBase("order", "mysql", "demo2015:baige.2016@tcp(182.92.163.192:3306)/db_order?charset=utf8", 30)
 	orm.RegisterModel(&order.Order{})
 
@@ -49,4 +53,5 @@ func init() {
 
 	orm.RegisterDataBase("user", "mysql", "demo2015:baige.2016@tcp(182.92.163.192:3306)/db_user?charset=utf8", 30)
 	orm.RegisterModel(&user.User{}, &user.UserPosition{})
+
 }

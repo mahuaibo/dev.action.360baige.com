@@ -13,6 +13,7 @@ import (
 	"dev.action.360baige.com/actions/account"
 	"dev.action.360baige.com/actions/order"
 	"dev.action.360baige.com/actions/application"
+	"dev.action.360baige.com/actions/message"
 	//"dev.action.360baige.com/actions/attendance"
 	//"dev.action.360baige.com/actions/card"
 	//"dev.action.360baige.com/actions/machine"
@@ -45,6 +46,7 @@ func init() {
 
 		"Application":    &application.ApplicationAction{},
 		"ApplicationTpl": &application.ApplicationTplAction{},
+		"MessageTemp": &message.MessageTempAction{},
 
 		////
 		//"AttendanceGroup":       &attendance.AttendanceGroupAction{},
