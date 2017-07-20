@@ -138,7 +138,7 @@ func (*UserAction) PageByCond(args *action.PageByCond, reply *action.PageByCond)
 
 	var err error
 	var replyList []user.User
-	reply.CurrentSize, err = o.QueryTable("user").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&replyList, args.Cols...)
+	reply.CurrentSize, err = o.QueryTable("user").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current - 1) * args.PageSize).All(&replyList, args.Cols...)
 	reply.Total, err = o.QueryTable("user").SetCond(cond).Count()
 	reply.Json, _ = json.Marshal(replyList)
 	return err
