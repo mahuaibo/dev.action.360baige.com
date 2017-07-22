@@ -16,8 +16,7 @@
 # Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
 .glide/
 .DS_Store
-/dev.model.360baige.com
+/dev.action.360baige.com
 /lastupdate.tmp
 /default.etcd
-/.gitignore
 /.idea
