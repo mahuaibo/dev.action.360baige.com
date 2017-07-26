@@ -6,6 +6,7 @@ import (
 	"dev.model.360baige.com/models/application"
 	"dev.model.360baige.com/action"
 	"dev.action.360baige.com/utils"
+	. "dev.action.360baige.com/database"
 	"time"
 	"encoding/json"
 )
@@ -15,8 +16,7 @@ type ApplicationTplAction struct {
 
 // 1
 func (*ApplicationTplAction) Add(args *application.ApplicationTpl, reply *application.ApplicationTpl) error {
-	o := orm.NewOrm()
-	o.Using("application")
+	o := GetOrmer(DB_application)
 	id, err := o.Insert(args)
 	reply.Id = id
 	return err
@@ -24,8 +24,7 @@ func (*ApplicationTplAction) Add(args *application.ApplicationTpl, reply *applic
 
 // 2
 func (*ApplicationTplAction) AddMultiple(args []*application.ApplicationTpl, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("application")
+	o := GetOrmer(DB_application)
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
@@ -33,8 +32,7 @@ func (*ApplicationTplAction) AddMultiple(args []*application.ApplicationTpl, rep
 
 // 3
 func (*ApplicationTplAction) FindById(args *application.ApplicationTpl, reply *application.ApplicationTpl) error {
-	o := orm.NewOrm()
-	o.Using("application")
+	o := GetOrmer(DB_application)
 	reply.Id = args.Id
 	err := o.Read(reply)
 	return err
@@ -42,8 +40,7 @@ func (*ApplicationTplAction) FindById(args *application.ApplicationTpl, reply *a
 
 // 4
 func (*ApplicationTplAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("application")
+	o := GetOrmer(DB_application)
 
 	cond := utils.ConvertCond(args.CondList)
 	values := utils.ConvertValues(args.UpdateList)
@@ -55,8 +52,7 @@ func (*ApplicationTplAction) UpdateByCond(args *action.UpdateByCond, reply *acti
 
 // 5
 func (*ApplicationTplAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("application")
+	o := GetOrmer(DB_application)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
@@ -68,8 +64,7 @@ func (*ApplicationTplAction) DeleteById(args *action.DeleteByIdCond, reply *acti
 
 // 6
 func (*ApplicationTplAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("application")
+	o := GetOrmer(DB_application)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
@@ -83,8 +78,7 @@ func (*ApplicationTplAction) UpdateById(args *action.UpdateByIdCond, reply *acti
 
 // 7
 func (*ApplicationTplAction) FindByCond(args *action.FindByCond, reply *application.ApplicationTpl) error {
-	o := orm.NewOrm()
-	o.Using("application")
+	o := GetOrmer(DB_application)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -94,8 +88,7 @@ func (*ApplicationTplAction) FindByCond(args *action.FindByCond, reply *applicat
 
 // 8
 func (*ApplicationTplAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("application")
+	o := GetOrmer(DB_application)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -106,8 +99,7 @@ func (*ApplicationTplAction) DeleteByCond(args *action.DeleteByCond, reply *acti
 
 // 9
 func (*ApplicationTplAction) ListByCond(args *action.ListByCond, reply *[]application.ApplicationTpl) error {
-	o := orm.NewOrm()
-	o.Using("application")
+	o := GetOrmer(DB_application)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -120,8 +112,7 @@ func (*ApplicationTplAction) ListByCond(args *action.ListByCond, reply *[]applic
 
 // 10
 func (*ApplicationTplAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
-	o := orm.NewOrm()
-	o.Using("application")
+	o := GetOrmer(DB_application)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -146,8 +137,7 @@ func (*ApplicationTplAction) PageByCond(args *action.PageByCond, reply *action.P
 
 // 11
 func (*ApplicationTplAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("application")
+	o := GetOrmer(DB_application)
 
 	cond := utils.ConvertCond(args.CondList)
 

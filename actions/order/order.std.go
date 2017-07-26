@@ -6,6 +6,7 @@ import (
 	"dev.model.360baige.com/models/order"
 	"dev.model.360baige.com/action"
 	"dev.action.360baige.com/utils"
+	. "dev.action.360baige.com/database"
 	"time"
 	"encoding/json"
 )
@@ -15,8 +16,7 @@ type OrderAction struct {
 
 // 1
 func (*OrderAction) Add(args *order.Order, reply *order.Order) error {
-	o := orm.NewOrm()
-	o.Using("order")
+	o := GetOrmer(DB_order)
 	id, err := o.Insert(args)
 	reply.Id = id
 	return err
@@ -24,8 +24,7 @@ func (*OrderAction) Add(args *order.Order, reply *order.Order) error {
 
 // 2
 func (*OrderAction) AddMultiple(args []*order.Order, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("order")
+	o := GetOrmer(DB_order)
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
@@ -33,8 +32,7 @@ func (*OrderAction) AddMultiple(args []*order.Order, reply *action.Num) error {
 
 // 3
 func (*OrderAction) FindById(args *order.Order, reply *order.Order) error {
-	o := orm.NewOrm()
-	o.Using("order")
+	o := GetOrmer(DB_order)
 	reply.Id = args.Id
 	err := o.Read(reply)
 	return err
@@ -42,8 +40,7 @@ func (*OrderAction) FindById(args *order.Order, reply *order.Order) error {
 
 // 4
 func (*OrderAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("order")
+	o := GetOrmer(DB_order)
 
 	cond := utils.ConvertCond(args.CondList)
 	values := utils.ConvertValues(args.UpdateList)
@@ -55,8 +52,7 @@ func (*OrderAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) e
 
 // 5
 func (*OrderAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("order")
+	o := GetOrmer(DB_order)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
@@ -68,8 +64,7 @@ func (*OrderAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) e
 
 // 6
 func (*OrderAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("order")
+	o := GetOrmer(DB_order)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
@@ -83,8 +78,7 @@ func (*OrderAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) e
 
 // 7
 func (*OrderAction) FindByCond(args *action.FindByCond, reply *order.Order) error {
-	o := orm.NewOrm()
-	o.Using("order")
+	o := GetOrmer(DB_order)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -94,8 +88,7 @@ func (*OrderAction) FindByCond(args *action.FindByCond, reply *order.Order) erro
 
 // 8
 func (*OrderAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("order")
+	o := GetOrmer(DB_order)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -106,8 +99,7 @@ func (*OrderAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) e
 
 // 9
 func (*OrderAction) ListByCond(args *action.ListByCond, reply *[]order.Order) error {
-	o := orm.NewOrm()
-	o.Using("order")
+	o := GetOrmer(DB_order)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -120,8 +112,7 @@ func (*OrderAction) ListByCond(args *action.ListByCond, reply *[]order.Order) er
 
 // 10
 func (*OrderAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
-	o := orm.NewOrm()
-	o.Using("order")
+	o := GetOrmer(DB_order)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -146,8 +137,7 @@ func (*OrderAction) PageByCond(args *action.PageByCond, reply *action.PageByCond
 
 // 11
 func (*OrderAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("order")
+	o := GetOrmer(DB_order)
 
 	cond := utils.ConvertCond(args.CondList)
 

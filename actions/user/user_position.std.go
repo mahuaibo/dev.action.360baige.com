@@ -6,6 +6,7 @@ import (
 	"dev.model.360baige.com/models/user"
 	"dev.model.360baige.com/action"
 	"dev.action.360baige.com/utils"
+	. "dev.action.360baige.com/database"
 	"time"
 	"encoding/json"
 )
@@ -15,8 +16,7 @@ type UserPositionAction struct {
 
 // 1
 func (*UserPositionAction) Add(args *user.UserPosition, reply *user.UserPosition) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 	id, err := o.Insert(args)
 	reply.Id = id
 	return err
@@ -24,8 +24,7 @@ func (*UserPositionAction) Add(args *user.UserPosition, reply *user.UserPosition
 
 // 2
 func (*UserPositionAction) AddMultiple(args []*user.UserPosition, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
@@ -33,8 +32,7 @@ func (*UserPositionAction) AddMultiple(args []*user.UserPosition, reply *action.
 
 // 3
 func (*UserPositionAction) FindById(args *user.UserPosition, reply *user.UserPosition) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 	reply.Id = args.Id
 	err := o.Read(reply)
 	return err
@@ -42,8 +40,7 @@ func (*UserPositionAction) FindById(args *user.UserPosition, reply *user.UserPos
 
 // 4
 func (*UserPositionAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := utils.ConvertCond(args.CondList)
 	values := utils.ConvertValues(args.UpdateList)
@@ -55,8 +52,7 @@ func (*UserPositionAction) UpdateByCond(args *action.UpdateByCond, reply *action
 
 // 5
 func (*UserPositionAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
@@ -68,8 +64,7 @@ func (*UserPositionAction) DeleteById(args *action.DeleteByIdCond, reply *action
 
 // 6
 func (*UserPositionAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
@@ -83,8 +78,7 @@ func (*UserPositionAction) UpdateById(args *action.UpdateByIdCond, reply *action
 
 // 7
 func (*UserPositionAction) FindByCond(args *action.FindByCond, reply *user.UserPosition) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -94,8 +88,7 @@ func (*UserPositionAction) FindByCond(args *action.FindByCond, reply *user.UserP
 
 // 8
 func (*UserPositionAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -106,8 +99,7 @@ func (*UserPositionAction) DeleteByCond(args *action.DeleteByCond, reply *action
 
 // 9
 func (*UserPositionAction) ListByCond(args *action.ListByCond, reply *[]user.UserPosition) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -120,8 +112,7 @@ func (*UserPositionAction) ListByCond(args *action.ListByCond, reply *[]user.Use
 
 // 10
 func (*UserPositionAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -146,8 +137,7 @@ func (*UserPositionAction) PageByCond(args *action.PageByCond, reply *action.Pag
 
 // 11
 func (*UserPositionAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := utils.ConvertCond(args.CondList)
 

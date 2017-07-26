@@ -6,6 +6,7 @@ import (
 	"dev.model.360baige.com/models/user"
 	"dev.model.360baige.com/action"
 	"dev.action.360baige.com/utils"
+	. "dev.action.360baige.com/database"
 	"time"
 	"encoding/json"
 )
@@ -15,8 +16,7 @@ type UserAction struct {
 
 // 1
 func (*UserAction) Add(args *user.User, reply *user.User) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 	id, err := o.Insert(args)
 	reply.Id = id
 	return err
@@ -24,8 +24,7 @@ func (*UserAction) Add(args *user.User, reply *user.User) error {
 
 // 2
 func (*UserAction) AddMultiple(args []*user.User, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
@@ -33,8 +32,7 @@ func (*UserAction) AddMultiple(args []*user.User, reply *action.Num) error {
 
 // 3
 func (*UserAction) FindById(args *user.User, reply *user.User) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 	reply.Id = args.Id
 	err := o.Read(reply)
 	return err
@@ -42,8 +40,7 @@ func (*UserAction) FindById(args *user.User, reply *user.User) error {
 
 // 4
 func (*UserAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := utils.ConvertCond(args.CondList)
 	values := utils.ConvertValues(args.UpdateList)
@@ -55,8 +52,7 @@ func (*UserAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) er
 
 // 5
 func (*UserAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
@@ -68,8 +64,7 @@ func (*UserAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) er
 
 // 6
 func (*UserAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
@@ -83,8 +78,7 @@ func (*UserAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) er
 
 // 7
 func (*UserAction) FindByCond(args *action.FindByCond, reply *user.User) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -94,8 +88,7 @@ func (*UserAction) FindByCond(args *action.FindByCond, reply *user.User) error {
 
 // 8
 func (*UserAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -106,8 +99,7 @@ func (*UserAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) er
 
 // 9
 func (*UserAction) ListByCond(args *action.ListByCond, reply *[]user.User) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -120,8 +112,7 @@ func (*UserAction) ListByCond(args *action.ListByCond, reply *[]user.User) error
 
 // 10
 func (*UserAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -138,7 +129,7 @@ func (*UserAction) PageByCond(args *action.PageByCond, reply *action.PageByCond)
 
 	var err error
 	var replyList []user.User
-	reply.CurrentSize, err = o.QueryTable("user").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current - 1) * args.PageSize).All(&replyList, args.Cols...)
+	reply.CurrentSize, err = o.QueryTable("user").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&replyList, args.Cols...)
 	reply.Total, err = o.QueryTable("user").SetCond(cond).Count()
 	reply.Json, _ = json.Marshal(replyList)
 	return err
@@ -146,8 +137,7 @@ func (*UserAction) PageByCond(args *action.PageByCond, reply *action.PageByCond)
 
 // 11
 func (*UserAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("user")
+	o := GetOrmer(DB_user)
 
 	cond := utils.ConvertCond(args.CondList)
 

@@ -6,6 +6,7 @@ import (
 	"dev.model.360baige.com/models/message"
 	"dev.model.360baige.com/action"
 	"dev.action.360baige.com/utils"
+	. "dev.action.360baige.com/database"
 	"time"
 	"encoding/json"
 )
@@ -15,8 +16,7 @@ type MessageSendAction struct {
 
 // 1
 func (*MessageSendAction) Add(args *message.MessageSend, reply *message.MessageSend) error {
-	o := orm.NewOrm()
-	o.Using("message")
+	o := GetOrmer(DB_message)
 	id, err := o.Insert(args)
 	reply.Id = id
 	return err
@@ -24,8 +24,7 @@ func (*MessageSendAction) Add(args *message.MessageSend, reply *message.MessageS
 
 // 2
 func (*MessageSendAction) AddMultiple(args []*message.MessageSend, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("message")
+	o := GetOrmer(DB_message)
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
@@ -33,8 +32,7 @@ func (*MessageSendAction) AddMultiple(args []*message.MessageSend, reply *action
 
 // 3
 func (*MessageSendAction) FindById(args *message.MessageSend, reply *message.MessageSend) error {
-	o := orm.NewOrm()
-	o.Using("message")
+	o := GetOrmer(DB_message)
 	reply.Id = args.Id
 	err := o.Read(reply)
 	return err
@@ -42,8 +40,7 @@ func (*MessageSendAction) FindById(args *message.MessageSend, reply *message.Mes
 
 // 4
 func (*MessageSendAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("message")
+	o := GetOrmer(DB_message)
 
 	cond := utils.ConvertCond(args.CondList)
 	values := utils.ConvertValues(args.UpdateList)
@@ -55,8 +52,7 @@ func (*MessageSendAction) UpdateByCond(args *action.UpdateByCond, reply *action.
 
 // 5
 func (*MessageSendAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("message")
+	o := GetOrmer(DB_message)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
@@ -68,8 +64,7 @@ func (*MessageSendAction) DeleteById(args *action.DeleteByIdCond, reply *action.
 
 // 6
 func (*MessageSendAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("message")
+	o := GetOrmer(DB_message)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
@@ -83,8 +78,7 @@ func (*MessageSendAction) UpdateById(args *action.UpdateByIdCond, reply *action.
 
 // 7
 func (*MessageSendAction) FindByCond(args *action.FindByCond, reply *message.MessageSend) error {
-	o := orm.NewOrm()
-	o.Using("message")
+	o := GetOrmer(DB_message)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -94,8 +88,7 @@ func (*MessageSendAction) FindByCond(args *action.FindByCond, reply *message.Mes
 
 // 8
 func (*MessageSendAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("message")
+	o := GetOrmer(DB_message)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -106,8 +99,7 @@ func (*MessageSendAction) DeleteByCond(args *action.DeleteByCond, reply *action.
 
 // 9
 func (*MessageSendAction) ListByCond(args *action.ListByCond, reply *[]message.MessageSend) error {
-	o := orm.NewOrm()
-	o.Using("message")
+	o := GetOrmer(DB_message)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -120,8 +112,7 @@ func (*MessageSendAction) ListByCond(args *action.ListByCond, reply *[]message.M
 
 // 10
 func (*MessageSendAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
-	o := orm.NewOrm()
-	o.Using("message")
+	o := GetOrmer(DB_message)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -146,8 +137,7 @@ func (*MessageSendAction) PageByCond(args *action.PageByCond, reply *action.Page
 
 // 11
 func (*MessageSendAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("message")
+	o := GetOrmer(DB_message)
 
 	cond := utils.ConvertCond(args.CondList)
 

@@ -6,6 +6,7 @@ import (
 	"dev.model.360baige.com/models/account"
 	"dev.model.360baige.com/action"
 	"dev.action.360baige.com/utils"
+	. "dev.action.360baige.com/database"
 	"time"
 	"encoding/json"
 )
@@ -15,8 +16,7 @@ type AccountAction struct {
 
 // 1
 func (*AccountAction) Add(args *account.Account, reply *account.Account) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 	id, err := o.Insert(args)
 	reply.Id = id
 	return err
@@ -24,8 +24,7 @@ func (*AccountAction) Add(args *account.Account, reply *account.Account) error {
 
 // 2
 func (*AccountAction) AddMultiple(args []*account.Account, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
@@ -33,8 +32,7 @@ func (*AccountAction) AddMultiple(args []*account.Account, reply *action.Num) er
 
 // 3
 func (*AccountAction) FindById(args *account.Account, reply *account.Account) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 	reply.Id = args.Id
 	err := o.Read(reply)
 	return err
@@ -42,8 +40,7 @@ func (*AccountAction) FindById(args *account.Account, reply *account.Account) er
 
 // 4
 func (*AccountAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := utils.ConvertCond(args.CondList)
 	values := utils.ConvertValues(args.UpdateList)
@@ -55,8 +52,7 @@ func (*AccountAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num)
 
 // 5
 func (*AccountAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
@@ -68,8 +64,7 @@ func (*AccountAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num)
 
 // 6
 func (*AccountAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
@@ -83,8 +78,7 @@ func (*AccountAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num)
 
 // 7
 func (*AccountAction) FindByCond(args *action.FindByCond, reply *account.Account) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -94,8 +88,7 @@ func (*AccountAction) FindByCond(args *action.FindByCond, reply *account.Account
 
 // 8
 func (*AccountAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -106,8 +99,7 @@ func (*AccountAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num)
 
 // 9
 func (*AccountAction) ListByCond(args *action.ListByCond, reply *[]account.Account) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -120,8 +112,7 @@ func (*AccountAction) ListByCond(args *action.ListByCond, reply *[]account.Accou
 
 // 10
 func (*AccountAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -146,8 +137,7 @@ func (*AccountAction) PageByCond(args *action.PageByCond, reply *action.PageByCo
 
 // 11
 func (*AccountAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := utils.ConvertCond(args.CondList)
 

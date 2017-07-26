@@ -46,7 +46,7 @@ func init() {
 
 		"Application":    &application.ApplicationAction{},
 		"ApplicationTpl": &application.ApplicationTplAction{},
-		"MessageTemp": &message.MessageTempAction{},
+		"MessageTemp":    &message.MessageTempAction{},
 
 		////
 		//"AttendanceGroup":       &attendance.AttendanceGroupAction{},
@@ -92,7 +92,7 @@ func register(services map[string]interface{}) {
 	rplugin.Start()
 	server := rpcx.NewServer()
 	server.PluginContainer.Add(rplugin)
-	server.PluginContainer.Add(plugin.NewMetricsPlugin())
+	server.PluginContainer.Add(plugin.NewAliasPlugin())
 
 	//注册 s
 	for name, serv := range services {

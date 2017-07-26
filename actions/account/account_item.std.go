@@ -6,6 +6,7 @@ import (
 	"dev.model.360baige.com/models/account"
 	"dev.model.360baige.com/action"
 	"dev.action.360baige.com/utils"
+	. "dev.action.360baige.com/database"
 	"time"
 	"encoding/json"
 )
@@ -15,8 +16,7 @@ type AccountItemAction struct {
 
 // 1
 func (*AccountItemAction) Add(args *account.AccountItem, reply *account.AccountItem) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 	id, err := o.Insert(args)
 	reply.Id = id
 	return err
@@ -24,8 +24,7 @@ func (*AccountItemAction) Add(args *account.AccountItem, reply *account.AccountI
 
 // 2
 func (*AccountItemAction) AddMultiple(args []*account.AccountItem, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
@@ -33,8 +32,7 @@ func (*AccountItemAction) AddMultiple(args []*account.AccountItem, reply *action
 
 // 3
 func (*AccountItemAction) FindById(args *account.AccountItem, reply *account.AccountItem) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 	reply.Id = args.Id
 	err := o.Read(reply)
 	return err
@@ -42,8 +40,7 @@ func (*AccountItemAction) FindById(args *account.AccountItem, reply *account.Acc
 
 // 4
 func (*AccountItemAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := utils.ConvertCond(args.CondList)
 	values := utils.ConvertValues(args.UpdateList)
@@ -55,8 +52,7 @@ func (*AccountItemAction) UpdateByCond(args *action.UpdateByCond, reply *action.
 
 // 5
 func (*AccountItemAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
@@ -68,8 +64,7 @@ func (*AccountItemAction) DeleteById(args *action.DeleteByIdCond, reply *action.
 
 // 6
 func (*AccountItemAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
@@ -83,8 +78,7 @@ func (*AccountItemAction) UpdateById(args *action.UpdateByIdCond, reply *action.
 
 // 7
 func (*AccountItemAction) FindByCond(args *action.FindByCond, reply *account.AccountItem) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -94,8 +88,7 @@ func (*AccountItemAction) FindByCond(args *action.FindByCond, reply *account.Acc
 
 // 8
 func (*AccountItemAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -106,8 +99,7 @@ func (*AccountItemAction) DeleteByCond(args *action.DeleteByCond, reply *action.
 
 // 9
 func (*AccountItemAction) ListByCond(args *action.ListByCond, reply *[]account.AccountItem) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -120,8 +112,7 @@ func (*AccountItemAction) ListByCond(args *action.ListByCond, reply *[]account.A
 
 // 10
 func (*AccountItemAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -146,8 +137,7 @@ func (*AccountItemAction) PageByCond(args *action.PageByCond, reply *action.Page
 
 // 11
 func (*AccountItemAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("account")
+	o := GetOrmer(DB_account)
 
 	cond := utils.ConvertCond(args.CondList)
 

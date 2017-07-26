@@ -6,6 +6,7 @@ import (
 	"dev.model.360baige.com/models/company"
 	"dev.model.360baige.com/action"
 	"dev.action.360baige.com/utils"
+	. "dev.action.360baige.com/database"
 	"time"
 	"encoding/json"
 )
@@ -15,8 +16,7 @@ type CompanyAction struct {
 
 // 1
 func (*CompanyAction) Add(args *company.Company, reply *company.Company) error {
-	o := orm.NewOrm()
-	o.Using("company")
+	o := GetOrmer(DB_company)
 	id, err := o.Insert(args)
 	reply.Id = id
 	return err
@@ -24,8 +24,7 @@ func (*CompanyAction) Add(args *company.Company, reply *company.Company) error {
 
 // 2
 func (*CompanyAction) AddMultiple(args []*company.Company, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("company")
+	o := GetOrmer(DB_company)
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
@@ -33,8 +32,7 @@ func (*CompanyAction) AddMultiple(args []*company.Company, reply *action.Num) er
 
 // 3
 func (*CompanyAction) FindById(args *company.Company, reply *company.Company) error {
-	o := orm.NewOrm()
-	o.Using("company")
+	o := GetOrmer(DB_company)
 	reply.Id = args.Id
 	err := o.Read(reply)
 	return err
@@ -42,8 +40,7 @@ func (*CompanyAction) FindById(args *company.Company, reply *company.Company) er
 
 // 4
 func (*CompanyAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("company")
+	o := GetOrmer(DB_company)
 
 	cond := utils.ConvertCond(args.CondList)
 	values := utils.ConvertValues(args.UpdateList)
@@ -55,8 +52,7 @@ func (*CompanyAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num)
 
 // 5
 func (*CompanyAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("company")
+	o := GetOrmer(DB_company)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
@@ -68,8 +64,7 @@ func (*CompanyAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num)
 
 // 6
 func (*CompanyAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("company")
+	o := GetOrmer(DB_company)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
@@ -83,8 +78,7 @@ func (*CompanyAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num)
 
 // 7
 func (*CompanyAction) FindByCond(args *action.FindByCond, reply *company.Company) error {
-	o := orm.NewOrm()
-	o.Using("company")
+	o := GetOrmer(DB_company)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -94,8 +88,7 @@ func (*CompanyAction) FindByCond(args *action.FindByCond, reply *company.Company
 
 // 8
 func (*CompanyAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("company")
+	o := GetOrmer(DB_company)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -106,8 +99,7 @@ func (*CompanyAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num)
 
 // 9
 func (*CompanyAction) ListByCond(args *action.ListByCond, reply *[]company.Company) error {
-	o := orm.NewOrm()
-	o.Using("company")
+	o := GetOrmer(DB_company)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -120,8 +112,7 @@ func (*CompanyAction) ListByCond(args *action.ListByCond, reply *[]company.Compa
 
 // 10
 func (*CompanyAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
-	o := orm.NewOrm()
-	o.Using("company")
+	o := GetOrmer(DB_company)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -141,5 +132,16 @@ func (*CompanyAction) PageByCond(args *action.PageByCond, reply *action.PageByCo
 	reply.CurrentSize, err = o.QueryTable("company").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&replyList, args.Cols...)
 	reply.Total, err = o.QueryTable("company").SetCond(cond).Count()
 	reply.Json, _ = json.Marshal(replyList)
+	return err
+}
+
+// 11
+func (*CompanyAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
+	o := GetOrmer(DB_company)
+
+	cond := utils.ConvertCond(args.CondList)
+
+	num, err := o.QueryTable("company").SetCond(cond).Count()
+	reply.Value = num
 	return err
 }

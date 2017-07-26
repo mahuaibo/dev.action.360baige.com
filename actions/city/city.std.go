@@ -6,6 +6,7 @@ import (
 	"dev.model.360baige.com/models/city"
 	"dev.model.360baige.com/action"
 	"dev.action.360baige.com/utils"
+	. "dev.action.360baige.com/database"
 	"time"
 	"encoding/json"
 )
@@ -15,8 +16,7 @@ type CityAction struct {
 
 // 1
 func (*CityAction) Add(args *city.City, reply *city.City) error {
-	o := orm.NewOrm()
-	o.Using("city")
+	o := GetOrmer(DB_city)
 	id, err := o.Insert(args)
 	reply.Id = id
 	return err
@@ -24,8 +24,7 @@ func (*CityAction) Add(args *city.City, reply *city.City) error {
 
 // 2
 func (*CityAction) AddMultiple(args []*city.City, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("city")
+	o := GetOrmer(DB_city)
 	num, err := o.InsertMulti(len(args), args)
 	reply.Value = num
 	return err
@@ -33,8 +32,7 @@ func (*CityAction) AddMultiple(args []*city.City, reply *action.Num) error {
 
 // 3
 func (*CityAction) FindById(args *city.City, reply *city.City) error {
-	o := orm.NewOrm()
-	o.Using("city")
+	o := GetOrmer(DB_city)
 	reply.Id = args.Id
 	err := o.Read(reply)
 	return err
@@ -42,8 +40,7 @@ func (*CityAction) FindById(args *city.City, reply *city.City) error {
 
 // 4
 func (*CityAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("city")
+	o := GetOrmer(DB_city)
 
 	cond := utils.ConvertCond(args.CondList)
 	values := utils.ConvertValues(args.UpdateList)
@@ -55,8 +52,7 @@ func (*CityAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) er
 
 // 5
 func (*CityAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("city")
+	o := GetOrmer(DB_city)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Value)
@@ -68,8 +64,7 @@ func (*CityAction) DeleteById(args *action.DeleteByIdCond, reply *action.Num) er
 
 // 6
 func (*CityAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("city")
+	o := GetOrmer(DB_city)
 
 	cond := orm.NewCondition()
 	cond = cond.And("id__in", args.Id)
@@ -83,8 +78,7 @@ func (*CityAction) UpdateById(args *action.UpdateByIdCond, reply *action.Num) er
 
 // 7
 func (*CityAction) FindByCond(args *action.FindByCond, reply *city.City) error {
-	o := orm.NewOrm()
-	o.Using("city")
+	o := GetOrmer(DB_city)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -94,8 +88,7 @@ func (*CityAction) FindByCond(args *action.FindByCond, reply *city.City) error {
 
 // 8
 func (*CityAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("city")
+	o := GetOrmer(DB_city)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -106,8 +99,7 @@ func (*CityAction) DeleteByCond(args *action.DeleteByCond, reply *action.Num) er
 
 // 9
 func (*CityAction) ListByCond(args *action.ListByCond, reply *[]city.City) error {
-	o := orm.NewOrm()
-	o.Using("city")
+	o := GetOrmer(DB_city)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -120,8 +112,7 @@ func (*CityAction) ListByCond(args *action.ListByCond, reply *[]city.City) error
 
 // 10
 func (*CityAction) PageByCond(args *action.PageByCond, reply *action.PageByCond) error {
-	o := orm.NewOrm()
-	o.Using("city")
+	o := GetOrmer(DB_city)
 
 	cond := utils.ConvertCond(args.CondList)
 
@@ -146,8 +137,7 @@ func (*CityAction) PageByCond(args *action.PageByCond, reply *action.PageByCond)
 
 // 11
 func (*CityAction) CountByCond(args *action.CountByCond, reply *action.Num) error {
-	o := orm.NewOrm()
-	o.Using("city")
+	o := GetOrmer(DB_city)
 
 	cond := utils.ConvertCond(args.CondList)
 
