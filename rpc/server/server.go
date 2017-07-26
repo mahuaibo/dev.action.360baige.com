@@ -88,6 +88,7 @@ func register(services map[string]interface{}) {
 		Metrics:        metrics.NewRegistry(),
 		Services:       make([]string, len(services)),
 		UpdateInterval: time.Minute,
+		//UpdateIntervalInSec: 60,
 	}
 	rplugin.Start()
 	server := rpcx.NewServer()
