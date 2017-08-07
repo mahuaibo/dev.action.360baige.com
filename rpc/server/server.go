@@ -17,7 +17,7 @@ import (
 	//"dev.action.360baige.com/actions/attendance"
 	//"dev.action.360baige.com/actions/card"
 	//"dev.action.360baige.com/actions/machine"
-	//"dev.action.360baige.com/actions/personnel"
+	"dev.action.360baige.com/actions/personnel"
 	"time"
 )
 
@@ -59,10 +59,10 @@ func init() {
 		//"Card": &card.CardAction{},
 		//"Machine": &machine.MachineAction{},
 		////
-		//"Person":          &personnel.PersonAction{},
-		//"PersonRelation":  &personnel.PersonRelationAction{},
-		//"PersonStructure": &personnel.PersonStructureAction{},
-		//"Structure":       &personnel.StructureAction{},
+		"Person":          &personnel.PersonAction{},
+		"PersonRelation":  &personnel.PersonRelationAction{},
+		"PersonStructure": &personnel.PersonStructureAction{},
+		"Structure":       &personnel.StructureAction{},
 	}
 	go register(services)
 	log.Debug("server run end")
