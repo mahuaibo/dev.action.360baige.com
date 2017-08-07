@@ -16,16 +16,16 @@ import (
 	//"dev.model.360baige.com/models/attendance"
 	//"dev.model.360baige.com/models/card"
 	//"dev.model.360baige.com/models/machine"
-	//"dev.model.360baige.com/models/personnel"
+	"dev.model.360baige.com/models/personnel"
 	"fmt"
 )
 
 const (
 	DB_default_driver = "mysql"
-	DB_default_ip     = "127.0.0.1" // "182.92.163.192"
+	DB_default_ip     = "182.92.163.192"
 	DB_default_port   = "3306"
-	DB_default_user   = "root"   // "demo2015"
-	DB_default_pwd    = "123456" // "baige.2016"
+	DB_default_user   = "demo2015"
+	DB_default_pwd    = "baige.2016"
 
 	DB_default     = "default"
 	DB_user        = "db_user"
@@ -37,12 +37,12 @@ const (
 	DB_order       = "db_order"
 	DB_schoolfee   = "db_schoolfee"
 	DB_message     = "db_message"
+	DB_personnel  = "db_personnel"
 
 	// 暂未启用 TODO
 	DB_attendance = "db_attendance"
 	DB_card       = "db_card"
 	DB_machine    = "db_machine"
-	DB_personnel  = "db_personnel"
 )
 
 func init() {
@@ -87,9 +87,9 @@ func init() {
 	//
 	//orm.RegisterDataBase(DB_machine, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_machine+"?charset=utf8", 30)
 	//orm.RegisterModel(&machine.Machine{})
-	//
-	//orm.RegisterDataBase(DB_personnel, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_personnel+"?charset=utf8", 30)
-	//orm.RegisterModel(&personnel.Person{}, &personnel.PersonRelation{}, &personnel.Structure{}, &personnel.PersonStructure{})
+
+	orm.RegisterDataBase(DB_personnel, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_personnel+"?charset=utf8", 30)
+	orm.RegisterModel(&personnel.Person{}, &personnel.PersonRelation{}, &personnel.Structure{}, &personnel.PersonStructure{})
 
 	fmt.Println("数据库注册完成")
 }
