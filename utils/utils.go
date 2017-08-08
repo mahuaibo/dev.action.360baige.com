@@ -3,7 +3,6 @@ package utils
 import (
 	"dev.model.360baige.com/action"
 	"github.com/astaxie/beego/orm"
-	//"github.com/astaxie/beego/context/param"
 )
 
 //字符串和字符串数组
