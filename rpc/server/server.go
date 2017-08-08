@@ -18,6 +18,7 @@ import (
 	//"dev.action.360baige.com/actions/card"
 	//"dev.action.360baige.com/actions/machine"
 	"dev.action.360baige.com/actions/personnel"
+	"dev.action.360baige.com/actions/schoolfee"
 	"time"
 )
 
@@ -48,6 +49,9 @@ func init() {
 		"ApplicationTpl": &application.ApplicationTplAction{},
 		"MessageTemp":    &message.MessageTempAction{},
 
+		"Project": &schoolfee.ProjectAction{},
+		"Record":  &schoolfee.RecordAction{},
+
 		////
 		//"AttendanceGroup":       &attendance.AttendanceGroupAction{},
 		//"AttendanceRecord":      &attendance.AttendanceRecordAction{},
@@ -55,10 +59,10 @@ func init() {
 		//"AttendanceShift":       &attendance.AttendanceShiftAction{},
 		//"AttendanceShiftItem":   &attendance.AttendanceShiftItemAction{},
 		//"AttendanceShiftRecord": &attendance.AttendanceShiftRecordAction{},
-		////
 		//"Card": &card.CardAction{},
 		//"Machine": &machine.MachineAction{},
 		////
+
 		"Person":          &personnel.PersonAction{},
 		"PersonRelation":  &personnel.PersonRelationAction{},
 		"PersonStructure": &personnel.PersonStructureAction{},
@@ -76,9 +80,9 @@ func register(services map[string]interface{}) {
 	etcdServerRegisterAddr := beego.AppConfig.String("RpcEtcdURL")
 	serverRegisterAddr := beego.AppConfig.String("RpcServer")
 	servs := make([]string, len(services))
-	for serName, _ := range services {
-		servs = append(servs, serName)
-	}
+	//for serName, _ := range services {
+	//	servs = append(servs, serName)
+	//}
 
 	//EtcdV3RegisterPlugin EtcdRegisterPlugin time.Minute
 	rplugin := &plugin.EtcdRegisterPlugin{
@@ -86,7 +90,7 @@ func register(services map[string]interface{}) {
 		EtcdServers:    []string{etcdServerRegisterAddr },
 		BasePath:       "/rpcx",
 		Metrics:        metrics.NewRegistry(),
-		Services:       make([]string, len(services)),
+		Services:       servs,
 		UpdateInterval: time.Minute,
 		//UpdateIntervalInSec: 60,
 	}

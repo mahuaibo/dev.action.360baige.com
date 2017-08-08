@@ -37,7 +37,7 @@ const (
 	DB_order       = "db_order"
 	DB_schoolfee   = "db_schoolfee"
 	DB_message     = "db_message"
-	DB_personnel  = "db_personnel"
+	DB_personnel   = "db_personnel"
 
 	// 暂未启用 TODO
 	DB_attendance = "db_attendance"
