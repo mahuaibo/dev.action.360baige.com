@@ -12,11 +12,13 @@ import (
 	"dev.model.360baige.com/models/order"
 	"dev.model.360baige.com/models/user"
 	"dev.model.360baige.com/models/schoolfee"
+	"dev.model.360baige.com/models/website"
+	"dev.model.360baige.com/models/authority"
+	"dev.model.360baige.com/models/card"
+	"dev.model.360baige.com/models/machine"
+	"dev.model.360baige.com/models/personnel"
 
 	//"dev.model.360baige.com/models/attendance"
-	//"dev.model.360baige.com/models/card"
-	//"dev.model.360baige.com/models/machine"
-	"dev.model.360baige.com/models/personnel"
 	"fmt"
 )
 
@@ -26,8 +28,9 @@ const (
 	DB_default_port   = "3306"
 	DB_default_user   = "demo2015"
 	DB_default_pwd    = "baige.2016"
+	dataSource        = DB_default_user + ":" + DB_default_pwd + "@tcp(" + DB_default_ip + ":" + DB_default_port + ")/"
 
-	DB_default     = "default"
+	DB_default     = "db_user"
 	DB_user        = "db_user"
 	DB_city        = "db_city"
 	DB_company     = "db_company"
@@ -38,60 +41,62 @@ const (
 	DB_schoolfee   = "db_schoolfee"
 	DB_message     = "db_message"
 	DB_personnel   = "db_personnel"
+	DB_card        = "db_card"
+	DB_machine     = "db_machine"
+	DB_authority   = "db_authority"
+	DB_website     = "db_website"
 
 	// 暂未启用 TODO
 	DB_attendance = "db_attendance"
-	DB_card       = "db_card"
-	DB_machine    = "db_machine"
 )
 
 func init() {
 	fmt.Println("数据库注册开始")
-	orm.RegisterDriver("mysql", orm.DRMySQL)
-	orm.Debug = true
-	orm.RegisterDataBase(DB_default, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_user+"?charset=utf8", 30)
 
-	orm.RegisterDataBase(DB_user, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_user+"?charset=utf8", 30)
-	orm.RegisterModel(&user.User{}, &user.UserPosition{})
+	registerDefault(DB_default, dataSource, true)
 
-	orm.RegisterDataBase(DB_city, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_city+"?charset=utf8", 30)
-	orm.RegisterModel(&city.City{})
+	registerDBM(DB_user, dataSource, &user.User{}, &user.UserPosition{})
 
-	orm.RegisterDataBase(DB_company, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_company+"?charset=utf8", 30)
-	orm.RegisterModel(&company.Company{})
+	registerDBM(DB_city, dataSource, &city.City{})
 
-	orm.RegisterDataBase(DB_logger, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_logger+"?charset=utf8", 30)
-	orm.RegisterModel(&logger.Logger{})
+	registerDBM(DB_company, dataSource, &company.Company{})
 
-	orm.RegisterDataBase(DB_account, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_account+"?charset=utf8", 30)
-	orm.RegisterModel(&account.Account{}, &account.AccountItem{}, &account.Transaction{})
+	registerDBM(DB_logger, dataSource, &logger.Logger{})
 
-	orm.RegisterDataBase(DB_application, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_application+"?charset=utf8", 30)
-	orm.RegisterModel(&application.Application{}, &application.ApplicationTpl{})
+	registerDBM(DB_account, dataSource, &account.Account{}, &account.AccountItem{}, &account.Transaction{})
 
-	orm.RegisterDataBase(DB_order, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_order+"?charset=utf8", 30)
-	orm.RegisterModel(&order.Order{})
+	registerDBM(DB_application, dataSource, &application.Application{}, &application.ApplicationTpl{})
 
-	orm.RegisterDataBase(DB_schoolfee, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_schoolfee+"?charset=utf8", 30)
-	orm.RegisterModel(&schoolfee.Project{}, &schoolfee.Record{})
+	registerDBM(DB_order, dataSource, &order.Order{})
 
-	orm.RegisterDataBase(DB_message, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_message+"?charset=utf8", 30)
-	orm.RegisterModel(&message.MessageTemp{}, &message.MessageTotal{}, &message.MessageSend{})
+	registerDBM(DB_schoolfee, dataSource, &schoolfee.Project{}, &schoolfee.Record{})
 
-	// 暂未启用 TODO
-	//orm.RegisterDataBase(DB_attendance, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_attendance+"?charset=utf8", 30)
-	//orm.RegisterModel(&attendance.AttendanceGroup{}, &attendance.AttendanceRecord{}, &attendance.AttendanceSetup{}, &attendance.AttendanceShift{}, &attendance.AttendanceShiftItem{}, &attendance.AttendanceShiftRecord{})
+	registerDBM(DB_message, dataSource, &message.MessageTemp{}, &message.MessageTotal{}, &message.MessageSend{})
 
-	//orm.RegisterDataBase(DB_card, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_card+"?charset=utf8", 30)
-	//orm.RegisterModel(&card.Card{})
-	//
-	//orm.RegisterDataBase(DB_machine, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_machine+"?charset=utf8", 30)
-	//orm.RegisterModel(&machine.Machine{})
+	registerDBM(DB_card, dataSource, &card.Card{})
 
-	orm.RegisterDataBase(DB_personnel, DB_default_driver, DB_default_user+":"+DB_default_pwd+"@tcp("+DB_default_ip+":"+DB_default_port+")/"+DB_personnel+"?charset=utf8", 30)
-	orm.RegisterModel(&personnel.Person{}, &personnel.PersonRelation{}, &personnel.Structure{}, &personnel.PersonStructure{})
+	registerDBM(DB_machine, dataSource, &machine.Machine{})
 
+	registerDBM(DB_authority, dataSource, &authority.Gather{}, &authority.GatherItem{}, &authority.PersonGather{})
+
+	registerDBM(DB_website, dataSource, &website.Menu{}, &website.Material{})
+
+	registerDBM(DB_personnel, dataSource, &personnel.Person{}, &personnel.PersonRelation{}, &personnel.Structure{}, &personnel.PersonStructure{})
+
+	//registerDBM(DB_attendance, dataSource,&attendance.AttendanceGroup{}, &attendance.AttendanceRecord{}, &attendance.AttendanceSetup{}, &attendance.AttendanceShift{}, &attendance.AttendanceShiftItem{}, &attendance.AttendanceShiftRecord{})
 	fmt.Println("数据库注册完成")
+}
+
+func registerDefault(dbName, dataSource string, debug bool) {
+	orm.Debug = debug
+	orm.RegisterDriver("mysql", orm.DRMySQL)
+	orm.RegisterDataBase("default", DB_default_driver, dataSource+dbName+"?charset=utf8", 30)
+}
+
+func registerDBM(dbName, dataSource string, models ...interface{}) {
+	orm.RegisterDriver("mysql", orm.DRMySQL)
+	orm.RegisterDataBase(dbName, DB_default_driver, dataSource+dbName+"?charset=utf8", 30)
+	orm.RegisterModel(models...)
 }
 
 func GetOrmer(dbName string) orm.Ormer {
