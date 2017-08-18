@@ -83,7 +83,11 @@ func (*MessageSendAction) FindByCond(args *action.FindByCond, reply *message.Mes
 	cond := utils.ConvertCond(args.CondList)
 
 	err := o.QueryTable("message_send").SetCond(cond).One(reply, args.Fileds...)
-	return err
+	if err == orm.ErrNoRows {
+		return nil
+	} else {
+		return err
+	}
 }
 
 // 8

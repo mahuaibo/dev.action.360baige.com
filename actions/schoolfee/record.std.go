@@ -83,7 +83,11 @@ func (*RecordAction) FindByCond(args *action.FindByCond, reply *schoolfee.Record
 	cond := utils.ConvertCond(args.CondList)
 
 	err := o.QueryTable("record").SetCond(cond).One(reply, args.Fileds...)
-	return err
+	if err == orm.ErrNoRows {
+		return nil
+	} else {
+		return err
+	}
 }
 
 // 8

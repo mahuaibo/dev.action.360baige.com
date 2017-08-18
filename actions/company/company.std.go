@@ -83,7 +83,11 @@ func (*CompanyAction) FindByCond(args *action.FindByCond, reply *company.Company
 	cond := utils.ConvertCond(args.CondList)
 
 	err := o.QueryTable("company").SetCond(cond).One(reply, args.Fileds...)
-	return err
+	if err == orm.ErrNoRows {
+		return nil
+	} else {
+		return err
+	}
 }
 
 // 8

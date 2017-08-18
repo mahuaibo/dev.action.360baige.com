@@ -83,7 +83,11 @@ func (*UserAction) FindByCond(args *action.FindByCond, reply *user.User) error {
 	cond := utils.ConvertCond(args.CondList)
 
 	err := o.QueryTable("user").SetCond(cond).One(reply, args.Fileds...)
-	return err
+	if err == orm.ErrNoRows {
+		return nil
+	} else {
+		return err
+	}
 }
 
 // 8

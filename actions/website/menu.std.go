@@ -83,7 +83,11 @@ func (*MenuAction) FindByCond(args *action.FindByCond, reply *website.Menu) erro
 	cond := utils.ConvertCond(args.CondList)
 
 	err := o.QueryTable("menu").SetCond(cond).One(reply, args.Fileds...)
-	return err
+	if err == orm.ErrNoRows {
+		return nil
+	} else {
+		return err
+	}
 }
 
 // 8

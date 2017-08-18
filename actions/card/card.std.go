@@ -83,7 +83,11 @@ func (*CardAction) FindByCond(args *action.FindByCond, reply *card.Card) error {
 	cond := utils.ConvertCond(args.CondList)
 
 	err := o.QueryTable("card").SetCond(cond).One(reply, args.Fileds...)
-	return err
+	if err == orm.ErrNoRows {
+		return nil
+	} else {
+		return err
+	}
 }
 
 // 8

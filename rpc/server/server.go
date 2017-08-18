@@ -117,18 +117,18 @@ func register(services map[string]map[string]interface{}) {
 		BasePath:            "/rpcx",
 		Metrics:             metrics.NewRegistry(),
 		Services:            servs,
-		UpdateIntervalInSec: 5*60,
+		UpdateIntervalInSec: 60,
 	}
 
 	rplugin.Start()
 	server := rpcx.NewServer()
 	server.PluginContainer.Add(rplugin)
-	server.PluginContainer.Add(plugin.NewAliasPlugin())
+	server.PluginContainer.Add(plugin.NewMetricsPlugin())
 
 	//注册 s
-	for _, group_services := range services {
+	for group, group_services := range services {
 		for name, serv := range group_services {
-			server.RegisterName(name, serv, "weight=1&m=devops")
+			server.RegisterName(name, serv, "g="+group+"&weight=1&m=devops")
 		}
 	}
 	//注册 e

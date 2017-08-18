@@ -41,6 +41,7 @@ func (*PersonStructureAction) FindById(args *personnel.PersonStructure, reply *p
 // 4
 func (*PersonStructureAction) UpdateByCond(args *action.UpdateByCond, reply *action.Num) error {
 	o := GetOrmer(DB_personnel)
+
 	cond := utils.ConvertCond(args.CondList)
 	values := utils.ConvertValues(args.UpdateList)
 
@@ -82,7 +83,11 @@ func (*PersonStructureAction) FindByCond(args *action.FindByCond, reply *personn
 	cond := utils.ConvertCond(args.CondList)
 
 	err := o.QueryTable("person_structure").SetCond(cond).One(reply, args.Fileds...)
-	return err
+	if err == orm.ErrNoRows {
+		return nil
+	} else {
+		return err
+	}
 }
 
 // 8
@@ -128,7 +133,7 @@ func (*PersonStructureAction) PageByCond(args *action.PageByCond, reply *action.
 
 	var err error
 	var replyList []personnel.PersonStructure
-	reply.CurrentSize, err = o.QueryTable("person_structure").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current - 1) * args.PageSize).All(&replyList, args.Cols...)
+	reply.CurrentSize, err = o.QueryTable("person_structure").SetCond(cond).OrderBy(args.OrderBy...).Limit(args.PageSize, (args.Current-1)*args.PageSize).All(&replyList, args.Cols...)
 	reply.Total, err = o.QueryTable("person_structure").SetCond(cond).Count()
 	reply.Json, _ = json.Marshal(replyList)
 	return err

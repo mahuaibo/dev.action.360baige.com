@@ -83,7 +83,11 @@ func (*StructureAction) FindByCond(args *action.FindByCond, reply *personnel.Str
 	cond := utils.ConvertCond(args.CondList)
 
 	err := o.QueryTable("structure").SetCond(cond).One(reply, args.Fileds...)
-	return err
+	if err == orm.ErrNoRows {
+		return nil
+	} else {
+		return err
+	}
 }
 
 // 8

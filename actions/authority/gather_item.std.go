@@ -83,7 +83,11 @@ func (*GatherItemAction) FindByCond(args *action.FindByCond, reply *authority.Ga
 	cond := utils.ConvertCond(args.CondList)
 
 	err := o.QueryTable("gather_item").SetCond(cond).One(reply, args.Fileds...)
-	return err
+	if err == orm.ErrNoRows {
+		return nil
+	} else {
+		return err
+	}
 }
 
 // 8

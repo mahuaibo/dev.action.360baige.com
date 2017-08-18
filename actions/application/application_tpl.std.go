@@ -83,7 +83,11 @@ func (*ApplicationTplAction) FindByCond(args *action.FindByCond, reply *applicat
 	cond := utils.ConvertCond(args.CondList)
 
 	err := o.QueryTable("application_tpl").SetCond(cond).One(reply, args.Fileds...)
-	return err
+	if err == orm.ErrNoRows {
+		return nil
+	} else {
+		return err
+	}
 }
 
 // 8
