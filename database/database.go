@@ -25,26 +25,29 @@ import (
 const (
 	DB_default_driver = "mysql"
 	DB_default_ip     = "182.92.163.192"
-	DB_default_port   = "3306"
 	DB_default_user   = "demo2015"
 	DB_default_pwd    = "baige.2016"
-	dataSource        = DB_default_user + ":" + DB_default_pwd + "@tcp(" + DB_default_ip + ":" + DB_default_port + ")/"
+	//DB_default_ip = "192.168.0.100"
+	//DB_default_user = "root"
+	//DB_default_pwd = "123456"
+	DB_default_port = "3306"
+	dataSource = DB_default_user + ":" + DB_default_pwd + "@tcp(" + DB_default_ip + ":" + DB_default_port + ")/"
 
-	DB_default     = "db_user"
-	DB_user        = "db_user"
-	DB_city        = "db_city"
-	DB_company     = "db_company"
-	DB_logger      = "db_logger"
-	DB_account     = "db_account"
+	DB_default = "db_user"
+	DB_user = "db_user"
+	DB_city = "db_city"
+	DB_company = "db_company"
+	DB_logger = "db_logger"
+	DB_account = "db_account"
 	DB_application = "db_application"
-	DB_order       = "db_order"
-	DB_schoolfee   = "db_schoolfee"
-	DB_message     = "db_message"
-	DB_personnel   = "db_personnel"
-	DB_card        = "db_card"
-	DB_machine     = "db_machine"
-	DB_authority   = "db_authority"
-	DB_website     = "db_website"
+	DB_order = "db_order"
+	DB_schoolfee = "db_schoolfee"
+	DB_message = "db_message"
+	DB_personnel = "db_personnel"
+	DB_card = "db_card"
+	DB_machine = "db_machine"
+	DB_authority = "db_authority"
+	DB_website = "db_website"
 
 	// 暂未启用 TODO
 	DB_attendance = "db_attendance"
@@ -90,12 +93,12 @@ func init() {
 func registerDefault(dbName, dataSource string, debug bool) {
 	orm.Debug = debug
 	orm.RegisterDriver("mysql", orm.DRMySQL)
-	orm.RegisterDataBase("default", DB_default_driver, dataSource+dbName+"?charset=utf8", 30)
+	orm.RegisterDataBase("default", DB_default_driver, dataSource + dbName + "?charset=utf8", 30)
 }
 
 func registerDBM(dbName, dataSource string, models ...interface{}) {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
-	orm.RegisterDataBase(dbName, DB_default_driver, dataSource+dbName+"?charset=utf8", 30)
+	orm.RegisterDataBase(dbName, DB_default_driver, dataSource + dbName + "?charset=utf8", 30)
 	orm.RegisterModel(models...)
 }
 
