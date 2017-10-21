@@ -2,6 +2,7 @@ package database
 
 import (
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"dev.model.360baige.com/models/account"
 	"dev.model.360baige.com/models/application"
@@ -23,16 +24,6 @@ import (
 )
 
 const (
-	DB_default_driver = "mysql"
-	DB_default_ip     = "182.92.163.192"
-	DB_default_user   = "demo2015"
-	DB_default_pwd    = "baige.2016"
-	//DB_default_ip   = "192.168.0.104"
-	//DB_default_user = "root"
-	//DB_default_pwd  = "123456"
-	DB_default_port = "3306"
-	dataSource      = DB_default_user + ":" + DB_default_pwd + "@tcp(" + DB_default_ip + ":" + DB_default_port + ")/"
-
 	DB_default     = "db_user"
 	DB_user        = "db_user"
 	DB_city        = "db_city"
@@ -48,12 +39,21 @@ const (
 	DB_machine     = "db_machine"
 	DB_authority   = "db_authority"
 	DB_website     = "db_website"
-
 	// 暂未启用 TODO
 	DB_attendance = "db_attendance"
 )
 
+var (
+	DB_default_driver = beego.AppConfig.String("DB_default_driver")
+	DB_default_ip     = beego.AppConfig.String("DB_default_ip")
+	DB_default_user   = beego.AppConfig.String("DB_default_user")
+	DB_default_pwd    = beego.AppConfig.String("DB_default_pwd")
+	DB_default_port   = beego.AppConfig.String("DB_default_port")
+	dataSource        = DB_default_user + ":" + DB_default_pwd + "@tcp(" + DB_default_ip + ":" + DB_default_port + ")/"
+)
+
 func init() {
+	fmt.Println(DB_default_driver, DB_default_ip)
 	fmt.Println("数据库注册开始")
 
 	registerDefault(DB_default, dataSource, true)
